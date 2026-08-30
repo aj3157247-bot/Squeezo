@@ -3,68 +3,151 @@ name: Build Squeezo Android APK
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
 
 permissions:
   contents: read
 
 jobs:
   build:
+    name: Build Squeezo APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+
+      # 1. دریافت پروژه
+      - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. نصب Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: ''
 
-      - name: Show project files
+      # 3. نمایش اطلاعات محیط
+      - name: Check environment
         run: |
+          echo "===== Node ====="
           node --version
+
+          echo "===== NPM ====="
           npm --version
-          test -f package.json
-          test -f capacitor.config.json
-          test -d www
+
+          echo "===== Project files ====="
           ls -la
 
+      # 4. بررسی فایل‌های Capacitor
+      - name: Check Capacitor configuration
+        run: |
+          echo "===== Capacitor files ====="
+
+          if [ -f "capacitor.config.json" ]; then
+            echo "capacitor.config.json FOUND"
+          else
+            echo "ERROR: capacitor.config.json NOT FOUND"
+            exit 1
+          fi
+
+          if [ -f "capacitor.config.ts" ]; then
+            echo "Old capacitor.config.ts found - removing it"
+            rm -f capacitor.config.ts
+          fi
+
+          if [ -f "capacitor.config.js" ]; then
+            echo "Old capacitor.config.js found - removing it"
+            rm -f capacitor.config.js
+          fi
+
+          echo "===== Final Capacitor files ====="
+          ls -la capacitor.config*
+
+      # 5. نصب وابستگی‌ها
       - name: Install dependencies
-        run: npm install --no-audit --no-fund --prefer-offline
+        run: npm install
 
+      # 6. بررسی Capacitor CLI
+      - name: Check Capacitor
+        run: |
+          npx cap --version
+          npx cap doctor || true
+
+      # 7. بررسی www
+      - name: Check web app
+        run: |
+          if [ ! -d "www" ]; then
+            echo "ERROR: www directory not found"
+            exit 1
+          fi
+
+          if [ ! -f "www/index.html" ]; then
+            echo "ERROR: www/index.html not found"
+            exit 1
+          fi
+
+          echo "Squeezo web files:"
+          find www -maxdepth 2 -type f | sort
+
+      # 8. Build وب
       - name: Build web app
-        run: npm run build
+        run: npm run build --if-present
 
+      # 9. اضافه کردن Android
       - name: Add Android platform
         run: npx cap add android
 
+      # 10. Sync کردن فایل‌های وب با Android
       - name: Sync Capacitor
         run: npx cap sync android
 
+      # 11. تنظیم Java
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '21'
-          cache: gradle
+          java-version: 21
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Build debug APK
-        working-directory: android
+      # 12. بررسی Android
+      - name: Check Android project
         run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug --no-daemon
+          if [ ! -d "android" ]; then
+            echo "ERROR: Android project was not created"
+            exit 1
+          fi
 
-      - name: Verify APK
-        run: test -f android/app/build/outputs/apk/debug/app-debug.apk
+          echo "Android project created successfully"
+          ls -la android
 
-      - name: Upload APK
+      # 13. اجازه اجرای Gradle
+      - name: Make Gradle executable
+        run: chmod +x android/gradlew
+
+      # 14. ساخت APK
+      - name: Build Debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug --stacktrace
+
+      # 15. بررسی APK
+      - name: Check APK
+        run: |
+          echo "===== APK files ====="
+
+          find android/app/build/outputs/apk -type f -name "*.apk" -print
+
+          if [ ! -f "android/app/build/outputs/apk/debug/app-debug.apk" ]; then
+            echo "ERROR: APK was not created"
+            exit 1
+          fi
+
+          echo "APK successfully created!"
+          ls -lh android/app/build/outputs/apk/debug/app-debug.apk
+
+      # 16. آپلود APK
+      - name: Upload Squeezo APK
         uses: actions/upload-artifact@v4
         with:
           name: Squeezo-debug-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+          retention-days: 30
