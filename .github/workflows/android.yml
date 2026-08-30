@@ -29,15 +29,29 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Verify project
+      - name: Verify repository layout
+        shell: bash
         run: |
-          test -f package.json
-          test -f capacitor.config.json
-          test -d www
-          test -f www/index.html
-          rm -f capacitor.config.ts capacitor.config.js
-          node --version
-          npm --version
+          set -e
+          echo "Workspace: $GITHUB_WORKSPACE"
+          pwd
+          echo "--- root ---"
+          ls -la
+          echo "--- native ---"
+          ls -la native || true
+          echo "--- native files ---"
+          find native -maxdepth 6 -type f -print 2>/dev/null | sort || true
+
+          test -f "$GITHUB_WORKSPACE/package.json"
+          test -f "$GITHUB_WORKSPACE/capacitor.config.json"
+          test -f "$GITHUB_WORKSPACE/www/index.html"
+          test -f "$GITHUB_WORKSPACE/native/apply-android.sh"
+          test -f "$GITHUB_WORKSPACE/native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java"
+          test -f "$GITHUB_WORKSPACE/native/android/com/squeezo/app/MainActivity.java"
+          test -f "$GITHUB_WORKSPACE/native/android/res/xml/file_paths.xml"
+
+          rm -f "$GITHUB_WORKSPACE/capacitor.config.ts" "$GITHUB_WORKSPACE/capacitor.config.js"
+          echo "Repository layout OK"
 
       - name: Install dependencies
         run: npm install
@@ -48,15 +62,11 @@ jobs:
       - name: Add Android platform
         run: npx cap add android
 
-      - name: Verify native video engine files
-        run: |
-          test -f native/apply-android.sh
-          test -f native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java
-          test -f native/android/com/squeezo/app/MainActivity.java
-          test -f native/android/res/xml/file_paths.xml
-
       - name: Apply native Squeezo video engine
+        shell: bash
         run: |
+          set -e
+          cd "$GITHUB_WORKSPACE"
           chmod +x native/apply-android.sh
           ./native/apply-android.sh
 
@@ -70,9 +80,11 @@ jobs:
           ./gradlew assembleDebug --stacktrace
 
       - name: Verify APK
+        shell: bash
         run: |
-          test -f android/app/build/outputs/apk/debug/app-debug.apk
-          ls -lh android/app/build/outputs/apk/debug/app-debug.apk
+          set -e
+          test -f "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
+          ls -lh "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
