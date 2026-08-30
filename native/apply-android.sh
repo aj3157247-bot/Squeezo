@@ -3,303 +3,102 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-APP="$ROOT/android/app"
 ANDROID_ROOT="$ROOT/android"
-
+APP="$ANDROID_ROOT/app"
 SRC="$SCRIPT_DIR/android"
 PKG="$APP/src/main/java/com/squeezo/app"
 RES_XML="$APP/src/main/res/xml"
 
-echo "========================================"
-echo " Squeezo Native Android Setup"
-echo "========================================"
-echo "ROOT: $ROOT"
-echo "ANDROID: $ANDROID_ROOT"
-echo "APP: $APP"
+fail() { echo "ERROR: $*" >&2; exit 1; }
 
-if [[ ! -d "$APP" ]]; then
-  echo "ERROR: Android project not found:"
-  echo "$APP"
-  exit 1
-fi
+[[ -d "$APP" ]] || fail "Android project not found at $APP"
+[[ -f "$SRC/com/squeezo/app/SqueezoVideoCompressorPlugin.java" ]] || fail "Missing native plugin source"
+[[ -f "$SRC/com/squeezo/app/MainActivity.java" ]] || fail "Missing MainActivity source"
+[[ -f "$SRC/res/xml/file_paths.xml" ]] || fail "Missing file_paths.xml"
+[[ -f "$ANDROID_ROOT/build.gradle" ]] || fail "android/build.gradle not found"
+[[ -f "$APP/build.gradle" ]] || fail "android/app/build.gradle not found"
 
-# --------------------------------------------------
-# 1. Check native source files
-# --------------------------------------------------
+mkdir -p "$PKG" "$RES_XML"
+cp "$SRC/com/squeezo/app/SqueezoVideoCompressorPlugin.java" "$PKG/SqueezoVideoCompressorPlugin.java"
+cp "$SRC/com/squeezo/app/MainActivity.java" "$PKG/MainActivity.java"
+cp "$SRC/res/xml/file_paths.xml" "$RES_XML/file_paths.xml"
 
-for f in \
-  "$SRC/com/squeezo/app/SqueezoVideoCompressorPlugin.java" \
-  "$SRC/com/squeezo/app/MainActivity.java" \
-  "$SRC/res/xml/file_paths.xml"; do
-
-  if [[ ! -f "$f" ]]; then
-    echo "ERROR: Native source file not found:"
-    echo "$f"
-
-    echo ""
-    echo "Native repository tree:"
-    find "$SCRIPT_DIR" -maxdepth 8 -type f | sort || true
-
-    exit 1
-  fi
-done
-
-echo "Native source files found."
-
-# --------------------------------------------------
-# 2. Copy Java files
-# --------------------------------------------------
-
-mkdir -p "$PKG"
-mkdir -p "$RES_XML"
-
-cp \
-  "$SRC/com/squeezo/app/SqueezoVideoCompressorPlugin.java" \
-  "$PKG/SqueezoVideoCompressorPlugin.java"
-
-cp \
-  "$SRC/com/squeezo/app/MainActivity.java" \
-  "$PKG/MainActivity.java"
-
-cp \
-  "$SRC/res/xml/file_paths.xml" \
-  "$RES_XML/file_paths.xml"
-
-echo "Native Java files copied."
-
-# --------------------------------------------------
-# 3. Upgrade Android Gradle Plugin
-# --------------------------------------------------
-
-ROOT_GRADLE="$ANDROID_ROOT/build.gradle"
-
-if [[ -f "$ROOT_GRADLE" ]]; then
-
-  echo "Updating Android Gradle Plugin..."
-
-  python3 - "$ROOT_GRADLE" <<'PY'
-import sys
-import re
-
-p = sys.argv[1]
-
-with open(p, encoding="utf-8") as f:
-    s = f.read()
-
-# AGP versions such as:
-# com.android.application version '8.7.2'
-s = re.sub(
-    r"(com\.android\.application['\"]?\s+version\s+['\"])\d+\.\d+\.\d+(['\"])",
-    r"\g<1>8.10.0\2",
-    s
-)
-
-# Old buildscript style:
-# com.android.tools.build:gradle:8.7.2
-s = re.sub(
-    r"(com\.android\.tools\.build:gradle:)\d+\.\d+\.\d+",
-    r"\g<1>8.10.0",
-    s
-)
-
-with open(p, "w", encoding="utf-8") as f:
-    f.write(s)
-
-print("AGP updated to 8.10.0")
-PY
-
-else
-  echo "WARNING: $ROOT_GRADLE not found."
-fi
-
-# --------------------------------------------------
-# 4. Upgrade Gradle wrapper
-# --------------------------------------------------
-
-WRAPPER="$ANDROID_ROOT/gradle/wrapper/gradle-wrapper.properties"
-
-if [[ -f "$WRAPPER" ]]; then
-
-  echo "Updating Gradle wrapper..."
-
-  python3 - "$WRAPPER" <<'PY'
-import sys
-import re
-
-p = sys.argv[1]
-
-with open(p, encoding="utf-8") as f:
-    s = f.read()
-
-s = re.sub(
-    r"distributionUrl=.*",
-    "distributionUrl=https\\://services.gradle.org/distributions/gradle-8.11.1-all.zip",
-    s
-)
-
-with open(p, "w", encoding="utf-8") as f:
-    f.write(s)
-
-print("Gradle wrapper updated to 8.11.1")
-PY
-
-else
-  echo "WARNING: Gradle wrapper properties not found."
-fi
-
-# --------------------------------------------------
-# 5. Update compileSdk / targetSdk
-# --------------------------------------------------
-
+# Media3 1.10.x requires compileSdk 36. Keep all Media3 modules on exactly one version.
 APP_GRADLE="$APP/build.gradle"
-
-if [[ ! -f "$APP_GRADLE" ]]; then
-  echo "ERROR: app/build.gradle not found:"
-  echo "$APP_GRADLE"
-  exit 1
-fi
-
-echo "Updating compileSdk and targetSdk..."
-
 python3 - "$APP_GRADLE" <<'PY'
-import sys
-import re
-
+import re, sys
 p = sys.argv[1]
-
-with open(p, encoding="utf-8") as f:
-    s = f.read()
-
-# compileSdk 35 / compileSdkVersion 35
-s = re.sub(
-    r"\bcompileSdk(?:Version)?\s+35\b",
-    "compileSdk 36",
-    s
-)
-
-# If compileSdk exists with another numeric version.
-s = re.sub(
-    r"\bcompileSdk(?:Version)?\s+\d+\b",
-    "compileSdk 36",
-    s
-)
-
-# targetSdk 35 / targetSdkVersion 35
-s = re.sub(
-    r"\btargetSdk(?:Version)?\s+35\b",
-    "targetSdk 36",
-    s
-)
-
-# If targetSdk exists with another numeric version.
-s = re.sub(
-    r"\btargetSdk(?:Version)?\s+\d+\b",
-    "targetSdk 36",
-    s
-)
-
-with open(p, "w", encoding="utf-8") as f:
-    f.write(s)
-
-print("compileSdk = 36")
-print("targetSdk  = 36")
-PY
-
-# --------------------------------------------------
-# 5b. Update Capacitor Android variables.gradle
-# --------------------------------------------------
-
-# Capacitor keeps the actual SDK values in variables.gradle.
-# Updating only app/build.gradle is not enough because it may contain
-# compileSdk = rootProject.ext.compileSdkVersion.
-VARIABLES_GRADLE="$ANDROID_ROOT/variables.gradle"
-
-if [[ -f "$VARIABLES_GRADLE" ]]; then
-  echo "Updating Capacitor variables.gradle SDK versions..."
-  python3 - "$VARIABLES_GRADLE" <<'PY'
-import sys
-import re
-p = sys.argv[1]
-s = open(p, encoding="utf-8").read()
-s = re.sub(r'(compileSdkVersion\s*=\s*)\d+', r'\g<1>36', s)
-s = re.sub(r'(targetSdkVersion\s*=\s*)\d+', r'\g<1>36', s)
-open(p, "w", encoding="utf-8").write(s)
-print("variables.gradle: compileSdkVersion = 36, targetSdkVersion = 36")
-PY
-else
-  echo "WARNING: $VARIABLES_GRADLE not found."
-fi
-
-# --------------------------------------------------
-# 6. Add Media3 dependencies
-# --------------------------------------------------
-
-echo "Adding Media3 dependencies..."
-
-python3 - "$APP_GRADLE" <<'PY'
-import sys
-
-p = sys.argv[1]
-
-with open(p, encoding="utf-8") as f:
-    s = f.read()
-
-# Remove previous Squeezo Media3 entries so versions cannot conflict.
-lines = []
-
-for line in s.splitlines():
-    if "androidx.media3:" in line:
-        continue
-    lines.append(line)
-
-s = "\n".join(lines) + "\n"
-
-block = '''
-    implementation "androidx.media3:media3-transformer:1.10.1"
+s = open(p, encoding='utf-8').read()
+lines = [line for line in s.splitlines() if 'androidx.media3:' not in line]
+s = '\n'.join(lines).rstrip() + '\n'
+block = '''    implementation "androidx.media3:media3-transformer:1.10.1"
     implementation "androidx.media3:media3-effect:1.10.1"
     implementation "androidx.media3:media3-common:1.10.1"
     implementation "androidx.media3:media3-exoplayer:1.10.1"
     implementation "androidx.media3:media3-datasource:1.10.1"
     implementation "androidx.media3:media3-muxer:1.10.1"
 '''
-
-marker = "dependencies {"
-
-if marker not in s:
-    raise SystemExit("ERROR: dependencies block not found")
-
-s = s.replace(marker, marker + block, 1)
-
-with open(p, "w", encoding="utf-8") as f:
-    f.write(s)
-
-print("Media3 1.10.1 configured.")
+if 'dependencies {' not in s:
+    raise SystemExit('dependencies block not found')
+s = s.replace('dependencies {', 'dependencies {\n' + block, 1)
+open(p, 'w', encoding='utf-8').write(s)
 PY
 
-# --------------------------------------------------
-# 7. Add FileProvider
-# --------------------------------------------------
-
-MANIFEST="$APP/src/main/AndroidManifest.xml"
-
-if [[ ! -f "$MANIFEST" ]]; then
-  echo "ERROR: AndroidManifest.xml not found:"
-  echo "$MANIFEST"
-  exit 1
+# Capacitor 7 uses android/variables.gradle for SDK versions.
+VARIABLES="$ANDROID_ROOT/variables.gradle"
+if [[ -f "$VARIABLES" ]]; then
+  python3 - "$VARIABLES" <<'PY'
+import re, sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+s = re.sub(r'(compileSdkVersion\s*=\s*)\d+', r'\g<1>36', s)
+s = re.sub(r'(targetSdkVersion\s*=\s*)\d+', r'\g<1>36', s)
+s = re.sub(r'(compileSdkVersion\s+)\d+', r'\g<1>36', s)
+s = re.sub(r'(targetSdkVersion\s+)\d+', r'\g<1>36', s)
+open(p, 'w', encoding='utf-8').write(s)
+PY
+else
+  # Fallback for templates that do not expose variables.gradle.
+  python3 - "$APP_GRADLE" <<'PY'
+import re, sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+s = re.sub(r'\bcompileSdk(?:Version)?\s*[= ]\s*\d+', 'compileSdk 36', s)
+s = re.sub(r'\btargetSdk(?:Version)?\s*[= ]\s*\d+', 'targetSdk 36', s)
+open(p, 'w', encoding='utf-8').write(s)
+PY
 fi
 
+# AGP 8.10.0 is compatible with API 36 and requires Gradle 8.11.1.
+ROOT_GRADLE="$ANDROID_ROOT/build.gradle"
+python3 - "$ROOT_GRADLE" <<'PY'
+import re, sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+s = re.sub(r'(com\.android\.tools\.build:gradle:)[0-9.]+', r'\g<1>8.10.0', s)
+s = re.sub(r"(com\.android\.application\s+version\s+['\"])[0-9.]+(['\"])", r'\g<1>8.10.0\2', s)
+s = re.sub(r"(com\.android\.library\s+version\s+['\"])[0-9.]+(['\"])", r'\g<1>8.10.0\2', s)
+open(p, 'w', encoding='utf-8').write(s)
+PY
+
+WRAPPER="$ANDROID_ROOT/gradle/wrapper/gradle-wrapper.properties"
+[[ -f "$WRAPPER" ]] || fail "gradle-wrapper.properties not found"
+python3 - "$WRAPPER" <<'PY'
+import re, sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+s = re.sub(r'^distributionUrl=.*$', 'distributionUrl=https\\://services.gradle.org/distributions/gradle-8.11.1-all.zip', s, flags=re.M)
+open(p, 'w', encoding='utf-8').write(s)
+PY
+
+MANIFEST="$APP/src/main/AndroidManifest.xml"
+[[ -f "$MANIFEST" ]] || fail "AndroidManifest.xml not found"
 python3 - "$MANIFEST" <<'PY'
 import sys
-
 p = sys.argv[1]
-
-with open(p, encoding="utf-8") as f:
-    s = f.read()
-
-if "androidx.core.content.FileProvider" not in s:
-
-    provider = '''
-        <provider
+s = open(p, encoding='utf-8').read()
+if 'androidx.core.content.FileProvider' not in s:
+    provider = '''        <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
@@ -307,52 +106,11 @@ if "androidx.core.content.FileProvider" not in s:
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
-        </provider>
-'''
-
-    if "</application>" not in s:
-        raise SystemExit("ERROR: </application> not found")
-
-    s = s.replace(
-        "</application>",
-        provider + "    </application>",
-        1
-    )
-
-    with open(p, "w", encoding="utf-8") as f:
-        f.write(s)
-
-    print("FileProvider added.")
-
-else:
-    print("FileProvider already exists.")
+        </provider>\n'''
+    if '</application>' not in s:
+        raise SystemExit('</application> not found')
+    s = s.replace('</application>', provider + '    </application>', 1)
+    open(p, 'w', encoding='utf-8').write(s)
 PY
 
-# --------------------------------------------------
-# 8. Print final Android configuration
-# --------------------------------------------------
-
-echo ""
-echo "========================================"
-echo " FINAL ANDROID CONFIGURATION"
-echo "========================================"
-
-echo "--- AGP ---"
-grep -R "com.android.tools.build:gradle\|com.android.application.*version" \
-  "$ANDROID_ROOT" \
-  --include="build.gradle" \
-  --include="build.gradle.kts" \
-  2>/dev/null || true
-
-echo ""
-echo "--- SDK ---"
-grep -E "compileSdk|targetSdk" "$APP_GRADLE" || true
-
-echo ""
-echo "--- Media3 ---"
-grep "androidx.media3:" "$APP_GRADLE" || true
-
-echo ""
-echo "========================================"
-echo " Native Squeezo video engine applied."
-echo "========================================"
+echo "Squeezo native Android engine configured: compileSdk=36, targetSdk=36, AGP=8.10.0, Gradle=8.11.1, Media3=1.10.1"
