@@ -1,23 +1,42 @@
-# Squeezo — Final Offline Web App
+# Squeezo — Android + Capacitor
 
-Squeezo is a privacy-first media compressor designed for GitHub Pages / PWA.
+Squeezo is a privacy-first image/video compressor designed to work offline. The web app is bundled locally inside the Android application, so the compressor UI and assets do not require a server.
 
-## Included
-- Image compression: WebP/JPEG, quality, max resolution, batch processing.
-- Video compression: browser-native MediaRecorder/WebCodecs-style workflow using canvas + captured audio where supported.
-- Presets: Balanced, Small Size, High Quality, Custom.
-- Resolution, bitrate and FPS controls.
-- Progress indicator.
-- Save and native Share support.
-- PWA service worker for offline app shell.
-- 12 languages with RTL for Dari, Pashto and Arabic.
-- Dark/light theme.
-- Local-only processing; no upload API or server is used.
+## Build on GitHub
 
-## Important video compatibility note
-Video encoding is performed by the browser. Chromium-based browsers on Android/desktop are the main target. MP4 recording is only used when the browser reports support; otherwise WebM is selected. This avoids shipping a huge third-party WASM binary and keeps the app deployable as a static GitHub Pages site.
+1. Upload this repository to GitHub.
+2. Open **Actions**.
+3. Run **Build Squeezo Android APK** (or push to `main`).
+4. Open the completed workflow and download the **Squeezo-debug-apk** artifact.
 
-## GitHub Pages
-Repository Settings → Pages → Deploy from branch → main → /(root).
+The workflow installs Capacitor, creates the Android platform when it is not present, syncs the `www` app, and builds the APK.
 
-The app does not require a backend or API key.
+## Build locally
+
+```bash
+npm install
+npx cap add android
+npx cap sync android
+npx cap open android
+```
+
+Or build directly:
+
+```bash
+cd android
+./gradlew assembleDebug
+```
+
+## App identity
+
+- Name: Squeezo
+- Package ID: `com.squeezo.app`
+- Web directory: `www`
+
+## Offline/privacy
+
+All web assets are packaged under `www`. Squeezo does not need a backend for its local compression workflow. Files selected by the user are processed on the device/browser runtime.
+
+## Important note about video formats
+
+Browser-based video compression depends on the codecs supported by the device WebView. The app can therefore fall back to a browser-supported output format when a requested codec is unavailable. A future native FFmpeg module can be added if guaranteed MP4/H.264 output is required on every Android device.
