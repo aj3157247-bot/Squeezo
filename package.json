@@ -4,16 +4,17 @@
   "private": true,
   "description": "Squeezo - private offline image and video compressor",
   "scripts": {
+    "build": "node -e \"console.log('Squeezo web assets are ready in www/')\"",
     "cap:sync": "npx cap sync android",
     "cap:open": "npx cap open android",
     "android:build": "cd android && ./gradlew assembleDebug",
     "android:release": "cd android && ./gradlew assembleRelease"
   },
   "dependencies": {
-    "@capacitor/android": "latest",
-    "@capacitor/core": "latest"
+    "@capacitor/android": "7.4.3",
+    "@capacitor/core": "7.4.3"
   },
   "devDependencies": {
-    "@capacitor/cli": "latest"
+    "@capacitor/cli": "7.4.3"
   }
 }
