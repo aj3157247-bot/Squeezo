@@ -48,6 +48,13 @@ jobs:
       - name: Add Android platform
         run: npx cap add android
 
+      - name: Verify native video engine files
+        run: |
+          test -f native/apply-android.sh
+          test -f native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java
+          test -f native/android/com/squeezo/app/MainActivity.java
+          test -f native/android/res/xml/file_paths.xml
+
       - name: Apply native Squeezo video engine
         run: |
           chmod +x native/apply-android.sh
