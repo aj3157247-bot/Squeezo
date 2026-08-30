@@ -3,8 +3,7 @@ name: Build Squeezo Android APK
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -13,274 +12,146 @@ jobs:
   build:
     name: Build Squeezo APK
     runs-on: ubuntu-latest
-
     steps:
-      # --------------------------------------------------
-      # 1. Checkout
-      # --------------------------------------------------
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      # --------------------------------------------------
-      # 2. Setup Java
-      # --------------------------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: false
+
       - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: '17'
+          java-version: "17"
 
-      # --------------------------------------------------
-      # 3. Setup Node
-      # IMPORTANT:
-      # Do NOT use cache: npm because this project
-      # currently has no package-lock.json.
-      # --------------------------------------------------
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
-      # --------------------------------------------------
-      # 4. Install Android SDK 36
-      # --------------------------------------------------
-      - name: Setup Android SDK 36
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install Android SDK packages
+      - name: Install Android 16 SDK
         run: |
-          yes | sdkmanager --licenses || true
-          sdkmanager \
-            "platform-tools" \
-            "platforms;android-36" \
-            "build-tools;36.0.0"
+          yes | sdkmanager --licenses >/dev/null || true
+          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
 
-      # --------------------------------------------------
-      # 5. Check project files
-      # --------------------------------------------------
-      - name: Check project
-        run: |
-          echo "===== ROOT ====="
-          ls -la
-
-          echo "===== WWW ====="
-          if [ -d "www" ]; then
-            ls -la www
-          else
-            echo "ERROR: www directory not found"
-            exit 1
-          fi
-
-          echo "===== PACKAGE ====="
-          if [ -f "package.json" ]; then
-            cat package.json
-          else
-            echo "ERROR: package.json not found"
-            exit 1
-          fi
-
-          echo "===== CAPACITOR ====="
-          if [ -f "capacitor.config.json" ]; then
-            cat capacitor.config.json
-          fi
-
-      # --------------------------------------------------
-      # 6. Install npm dependencies
-      # IMPORTANT:
-      # npm install instead of npm ci because there is
-      # no package-lock.json.
-      # --------------------------------------------------
       - name: Install npm dependencies
-        run: |
-          npm install
+        run: npm install --no-audit --no-fund
 
-      # --------------------------------------------------
-      # 7. Verify Capacitor
-      # --------------------------------------------------
-      - name: Verify Capacitor
-        run: |
-          npx cap --version
-          npx cap doctor || true
-
-      # --------------------------------------------------
-      # 8. Create Android project if necessary
-      # --------------------------------------------------
-      - name: Create Android project
-        run: |
-          if [ ! -d "android" ]; then
-            echo "Android project does not exist."
-            echo "Creating Android project..."
-            npx cap add android
-          else
-            echo "Android project already exists."
-          fi
-
-      # --------------------------------------------------
-      # 9. Copy web files into Android
-      # --------------------------------------------------
-      - name: Sync Capacitor
-        run: |
-          npx cap sync android
-
-      # --------------------------------------------------
-      # 10. Apply native Squeezo video compressor
-      # --------------------------------------------------
-      - name: Apply Squeezo native Android engine
-        run: |
-          if [ -f "native/apply-android.sh" ]; then
-            chmod +x native/apply-android.sh
-            ./native/apply-android.sh
-          else
-            echo "WARNING: native/apply-android.sh not found."
-            echo "Continuing without native patch."
-          fi
-
-      # --------------------------------------------------
-      # 11. Force Android compile SDK 36
-      # --------------------------------------------------
-      - name: Configure Android SDK 36
+      - name: Prepare Capacitor Android
         shell: bash
         run: |
-          set -e
-
-          echo "Configuring compileSdk 36..."
-
-          # ------------------------------------------------
-          # variables.gradle
-          # ------------------------------------------------
-          if [ -f "android/variables.gradle" ]; then
-
-            python3 <<'PY'
-          from pathlib import Path
-
-          p = Path("android/variables.gradle")
-          s = p.read_text(encoding="utf-8")
-
-          import re
-
-          s = re.sub(
-              r'compileSdkVersion\s*=\s*\d+',
-              'compileSdkVersion = 36',
-              s
-          )
-
-          s = re.sub(
-              r'targetSdkVersion\s*=\s*\d+',
-              'targetSdkVersion = 36',
-              s
-          )
-
-          p.write_text(s, encoding="utf-8")
-          PY
-
+          set -euo pipefail
+          if [[ ! -d android/app ]]; then
+            npx cap add android
           fi
+          npx cap sync android
 
-          # ------------------------------------------------
-          # app/build.gradle
-          # ------------------------------------------------
-          if [ -f "android/app/build.gradle" ]; then
-
-            python3 <<'PY'
-          from pathlib import Path
-          import re
-
-          p = Path("android/app/build.gradle")
-          s = p.read_text(encoding="utf-8")
-
-          s = re.sub(
-              r'compileSdk(?:Version)?\s+rootProject\.ext\.variables\.compileSdkVersion',
-              'compileSdkVersion 36',
-              s
-          )
-
-          s = re.sub(
-              r'compileSdk(?:Version)?\s+\d+',
-              'compileSdkVersion 36',
-              s
-          )
-
-          p.write_text(s, encoding="utf-8")
-          PY
-
-          fi
-
-          # ------------------------------------------------
-          # Print final configuration
-          # ------------------------------------------------
-          echo ""
-          echo "===== variables.gradle ====="
-          if [ -f "android/variables.gradle" ]; then
-            cat android/variables.gradle
-          fi
-
-          echo ""
-          echo "===== app/build.gradle SDK settings ====="
-          grep -RniE \
-            "compileSdk|targetSdk|minSdk" \
-            android/app/build.gradle \
-            android/variables.gradle \
-            2>/dev/null || true
-
-      # --------------------------------------------------
-      # 12. Verify Android SDK 36 is really installed
-      # --------------------------------------------------
-      - name: Verify Android SDK
+      - name: Fix Android 36 and Media3 build
+        shell: bash
         run: |
-          echo "===== INSTALLED PLATFORMS ====="
-          sdkmanager --list_installed | grep -E \
-            "platforms;android-36|build-tools;36" || true
+          set -euo pipefail
+          APP="android/app/build.gradle"
+          ROOT="android/build.gradle"
+          ROOT_KTS="android/build.gradle.kts"
 
-          if [ ! -d "$ANDROID_HOME/platforms/android-36" ]; then
-            echo "ERROR: Android API 36 is not installed."
+          test -f "$APP"
+
+          # Android 16 / API 36 requires AGP 8.9.1 or newer.
+          if [[ -f "$ROOT" ]]; then
+            sed -i -E \
+              -e "s/com\.android\.application' version '[0-9]+\.[0-9]+\.[0-9]+'/com.android.application' version '8.9.1'/g" \
+              -e 's/com\.android\.application" version "[0-9]+\.[0-9]+\.[0-9]+"/com.android.application" version "8.9.1"/g' \
+              -e "s/com\.android\.library' version '[0-9]+\.[0-9]+\.[0-9]+'/com.android.library' version '8.9.1'/g" \
+              -e 's/com\.android\.library" version "[0-9]+\.[0-9]+\.[0-9]+"/com.android.library" version "8.9.1"/g' \
+              -e 's/com\.android\.tools\.build:gradle:[0-9]+\.[0-9]+\.[0-9]+/com.android.tools.build:gradle:8.9.1/g' \
+              "$ROOT" || true
+          fi
+
+          if [[ -f "$ROOT_KTS" ]]; then
+            sed -i -E \
+              -e 's/id\("com\.android\.application"\) version "[0-9]+\.[0-9]+\.[0-9]+"/id("com.android.application") version "8.9.1"/g' \
+              -e 's/id\("com\.android\.library"\) version "[0-9]+\.[0-9]+\.[0-9]+"/id("com.android.library") version "8.9.1"/g' \
+              "$ROOT_KTS" || true
+          fi
+
+          python3 - "$APP" <<'PY'
+import re, sys
+p = sys.argv[1]
+s = open(p, encoding='utf-8').read()
+s = re.sub(r'compileSdk(?:Version)?\s*[= ]\s*\d+', 'compileSdk 36', s)
+if 'compileSdk 36' not in s:
+    s = re.sub(r'(android\s*\{)', r'\1\n    compileSdk 36', s, count=1)
+s = re.sub(r'targetSdk(?:Version)?\s*[= ]\s*\d+', 'targetSdk 36', s)
+s = re.sub(r'^\s*buildToolsVersion\s+[^\n]+\n', '', s, flags=re.M)
+
+deps = '''\n    implementation "androidx.media3:media3-transformer:1.10.1"\n    implementation "androidx.media3:media3-effect:1.10.1"\n    implementation "androidx.media3:media3-common:1.10.1"\n'''
+if 'androidx.media3:media3-transformer' not in s:
+    if 'dependencies {' not in s:
+        raise SystemExit('dependencies block not found')
+    s = s.replace('dependencies {', 'dependencies {' + deps, 1)
+open(p, 'w', encoding='utf-8').write(s)
+PY
+
+          # AGP 8.9.x uses Gradle 8.11.1.
+          if [[ -f android/gradle/wrapper/gradle-wrapper.properties ]]; then
+            sed -i -E 's#gradle-[0-9]+\.[0-9]+(\.[0-9]+)?-#gradle-8.11.1-#' \
+              android/gradle/wrapper/gradle-wrapper.properties
+          fi
+
+      - name: Apply Squeezo native video engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          APP="android/app"
+          PKG="$APP/src/main/java/com/squeezo/app"
+          XML="$APP/src/main/res/xml"
+          mkdir -p "$PKG" "$XML"
+
+          if [[ -f native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java ]]; then
+            SRC="native/android"
+          elif [[ -f native/native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java ]]; then
+            SRC="native/native/android"
+          else
+            echo "ERROR: SqueezoVideoCompressorPlugin.java not found"
+            find native -maxdepth 8 -type f | sort || true
             exit 1
           fi
 
-          echo "Android API 36 is installed successfully."
+          cp "$SRC/com/squeezo/app/SqueezoVideoCompressorPlugin.java" "$PKG/SqueezoVideoCompressorPlugin.java"
+          [[ -f "$SRC/com/squeezo/app/MainActivity.java" ]] && cp "$SRC/com/squeezo/app/MainActivity.java" "$PKG/MainActivity.java"
+          cp "$SRC/res/xml/file_paths.xml" "$XML/file_paths.xml"
 
-      # --------------------------------------------------
-      # 13. Verify native files
-      # --------------------------------------------------
-      - name: Verify native files
+          python3 - "android/app/src/main/AndroidManifest.xml" <<'PY'
+import sys
+p=sys.argv[1]
+s=open(p,encoding='utf-8').read()
+if 'androidx.core.content.FileProvider' not in s:
+    provider='''\n        <provider\n            android:name="androidx.core.content.FileProvider"\n            android:authorities="${applicationId}.fileprovider"\n            android:exported="false"\n            android:grantUriPermissions="true">\n            <meta-data\n                android:name="android.support.FILE_PROVIDER_PATHS"\n                android:resource="@xml/file_paths" />\n        </provider>'''
+    if '</application>' not in s:
+        raise SystemExit('</application> not found')
+    s=s.replace('</application>',provider+'\n    </application>',1)
+    open(p,'w',encoding='utf-8').write(s)
+PY
+
+      - name: Verify
         run: |
-          echo "===== NATIVE TREE ====="
-          find native -maxdepth 8 -type f | sort || true
+          test -f android/gradlew
+          test -f android/app/build.gradle
+          test -f android/app/src/main/java/com/squeezo/app/SqueezoVideoCompressorPlugin.java
+          test -f android/app/src/main/res/xml/file_paths.xml
 
-          if [ -f "native/apply-android.sh" ]; then
-            echo "native/apply-android.sh: OK"
-          fi
-
-          if [ -f "native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java" ]; then
-            echo "Video compressor plugin: OK"
-          fi
-
-      # --------------------------------------------------
-      # 14. Build Debug APK
-      # --------------------------------------------------
-      - name: Build Debug APK
+      - name: Build debug APK
         working-directory: android
         run: |
           chmod +x gradlew
+          ./gradlew --no-daemon --stacktrace assembleDebug
 
-          echo "===== Gradle version ====="
-          ./gradlew --version
-
-          echo "===== BUILD DEBUG APK ====="
-          ./gradlew assembleDebug --stacktrace --no-daemon
-
-      # --------------------------------------------------
-      # 15. Find APK
-      # --------------------------------------------------
-      - name: Find APK
-        run: |
-          echo "===== APK FILES ====="
-          find android -type f -name "*.apk" -print
-
-      # --------------------------------------------------
-      # 16. Upload APK
-      # --------------------------------------------------
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Squeezo-Android-APK
-          path: android/app/build/outputs/apk/**/*.apk
+          name: Squeezo-debug-apk
+          path: android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+          retention-days: 14
