@@ -1,0 +1,9 @@
+{
+  "appId": "com.squeezo.app",
+  "appName": "Squeezo",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  }
+}
