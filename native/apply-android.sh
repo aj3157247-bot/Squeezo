@@ -37,7 +37,7 @@ python3 - "$APP/build.gradle" <<'PY'
 import sys
 p = sys.argv[1]
 s = open(p, encoding='utf-8').read()
-block = '''\n    implementation "androidx.media3:media3-transformer:1.11.0"\n    implementation "androidx.media3:media3-effect:1.11.0"\n    implementation "androidx.media3:media3-common:1.11.0"\n'''
+block = '''\n    implementation "androidx.media3:media3-transformer:1.10.1"\n    implementation "androidx.media3:media3-effect:1.10.1"\n    implementation "androidx.media3:media3-common:1.10.1"\n'''
 if 'androidx.media3:media3-transformer' not in s:
     marker = 'dependencies {'
     if marker not in s:
