@@ -206,6 +206,31 @@ print("targetSdk  = 36")
 PY
 
 # --------------------------------------------------
+# 5b. Update Capacitor Android variables.gradle
+# --------------------------------------------------
+
+# Capacitor keeps the actual SDK values in variables.gradle.
+# Updating only app/build.gradle is not enough because it may contain
+# compileSdk = rootProject.ext.compileSdkVersion.
+VARIABLES_GRADLE="$ANDROID_ROOT/variables.gradle"
+
+if [[ -f "$VARIABLES_GRADLE" ]]; then
+  echo "Updating Capacitor variables.gradle SDK versions..."
+  python3 - "$VARIABLES_GRADLE" <<'PY'
+import sys
+import re
+p = sys.argv[1]
+s = open(p, encoding="utf-8").read()
+s = re.sub(r'(compileSdkVersion\s*=\s*)\d+', r'\g<1>36', s)
+s = re.sub(r'(targetSdkVersion\s*=\s*)\d+', r'\g<1>36', s)
+open(p, "w", encoding="utf-8").write(s)
+print("variables.gradle: compileSdkVersion = 36, targetSdkVersion = 36")
+PY
+else
+  echo "WARNING: $VARIABLES_GRADLE not found."
+fi
+
+# --------------------------------------------------
 # 6. Add Media3 dependencies
 # --------------------------------------------------
 
