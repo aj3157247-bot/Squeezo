@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111827">
+  <meta name="description" content="Squeezo — compress images and videos privately in your browser.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <title>Squeezo</title>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div class="brand"><span class="logo">S</span><span>Squeezo</span></div>
+      <button id="installBtn" class="icon-btn" hidden aria-label="Install Squeezo">＋</button>
+    </header>
+
+    <section class="hero">
+      <span class="badge">PRIVATE • FAST • OFFLINE READY</span>
+      <h1>Make your media<br><span>smaller.</span></h1>
+      <p>Compress images and videos on your device. Your files stay private.</p>
+    </section>
+
+    <section class="dropzone" id="dropzone">
+      <input id="fileInput" type="file" accept="image/*,video/*" multiple hidden>
+      <div class="upload-icon">↑</div>
+      <h2>Select files</h2>
+      <p>Images or videos • You can choose multiple files</p>
+      <button id="selectBtn" class="primary">Choose files</button>
+      <small>Nothing is uploaded to a server.</small>
+    </section>
+
+    <section id="queue" class="queue" hidden>
+      <div class="section-head"><h2>Your files</h2><button id="clearBtn" class="text-btn">Clear</button></div>
+      <div id="fileList"></div>
+      <div class="controls">
+        <label>Image quality <strong id="qualityValue">80%</strong>
+          <input id="quality" type="range" min="40" max="95" value="80">
+        </label>
+        <label>Image format
+          <select id="format"><option value="image/webp">WebP</option><option value="image/jpeg">JPEG</option></select>
+        </label>
+      </div>
+      <button id="compressBtn" class="primary wide">Compress selected files</button>
+      <div id="progress" class="progress" hidden><div id="bar"></div><span id="progressText">0%</span></div>
+    </section>
+
+    <section id="results" class="results" hidden>
+      <div class="section-head"><h2>Results</h2></div>
+      <div id="resultList"></div>
+    </section>
+
+    <footer><span>🔒 Files stay on your device</span><span>•</span><span>Squeezo v1.0</span></footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
