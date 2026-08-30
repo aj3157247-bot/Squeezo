@@ -29,6 +29,16 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Setup Android SDK 36
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android API 36
+        shell: bash
+        run: |
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+          sdkmanager "platforms;android-36" "build-tools;36.0.0"
+          sdkmanager --list_installed | grep -E 'platforms;android-36|build-tools;36.0.0'
+
       - name: Verify repository layout
         shell: bash
         run: |
