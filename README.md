@@ -1,42 +1,17 @@
-# Squeezo — Android + Capacitor
+# Squeezo — Android / Capacitor
 
-Squeezo is a privacy-first image/video compressor designed to work offline. The web app is bundled locally inside the Android application, so the compressor UI and assets do not require a server.
+Squeezo is an offline-first web app packaged as an Android application with Capacitor.
 
-## Build on GitHub
+## GitHub Actions
 
-1. Upload this repository to GitHub.
-2. Open **Actions**.
-3. Run **Build Squeezo Android APK** (or push to `main`).
-4. Open the completed workflow and download the **Squeezo-debug-apk** artifact.
+Push this project to the `main` branch, then open **Actions → Build Squeezo Android APK → Run workflow**.
+The generated APK is available under the workflow's **Artifacts** section as `Squeezo-debug-apk`.
 
-The workflow installs Capacitor, creates the Android platform when it is not present, syncs the `www` app, and builds the APK.
+## Structure
 
-## Build locally
+- `www/` — the complete web application bundled into the APK.
+- `capacitor.config.ts` — Capacitor app configuration.
+- `package.json` — Node/Capacitor dependencies.
+- `.github/workflows/android.yml` — automatic Android APK build.
 
-```bash
-npm install
-npx cap add android
-npx cap sync android
-npx cap open android
-```
-
-Or build directly:
-
-```bash
-cd android
-./gradlew assembleDebug
-```
-
-## App identity
-
-- Name: Squeezo
-- Package ID: `com.squeezo.app`
-- Web directory: `www`
-
-## Offline/privacy
-
-All web assets are packaged under `www`. Squeezo does not need a backend for its local compression workflow. Files selected by the user are processed on the device/browser runtime.
-
-## Important note about video formats
-
-Browser-based video compression depends on the codecs supported by the device WebView. The app can therefore fall back to a browser-supported output format when a requested codec is unavailable. A future native FFmpeg module can be added if guaranteed MP4/H.264 output is required on every Android device.
+The Android platform folder is generated during CI with `npx cap add android`, so it does not need to be committed.
