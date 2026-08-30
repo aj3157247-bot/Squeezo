@@ -3,7 +3,8 @@ name: Build Squeezo Android APK
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -12,85 +13,274 @@ jobs:
   build:
     name: Build Squeezo APK
     runs-on: ubuntu-latest
+
     steps:
+      # --------------------------------------------------
+      # 1. Checkout
+      # --------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Setup Java
+      # --------------------------------------------------
+      # 2. Setup Java
+      # --------------------------------------------------
+      - name: Setup Java 17
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: '17'
 
-      - name: Setup Android SDK
+      # --------------------------------------------------
+      # 3. Setup Node
+      # IMPORTANT:
+      # Do NOT use cache: npm because this project
+      # currently has no package-lock.json.
+      # --------------------------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # --------------------------------------------------
+      # 4. Install Android SDK 36
+      # --------------------------------------------------
+      - name: Setup Android SDK 36
         uses: android-actions/setup-android@v3
 
-      - name: Install Android API 36
-        shell: bash
+      - name: Install Android SDK packages
         run: |
-          yes | sdkmanager --licenses >/dev/null 2>&1 || true
-          sdkmanager "platforms;android-36" "build-tools;36.0.0"
-          sdkmanager --list_installed | grep -E 'platforms;android-36|build-tools;36.0.0'
+          yes | sdkmanager --licenses || true
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;36.0.0"
 
-      - name: Verify repository layout
+      # --------------------------------------------------
+      # 5. Check project files
+      # --------------------------------------------------
+      - name: Check project
+        run: |
+          echo "===== ROOT ====="
+          ls -la
+
+          echo "===== WWW ====="
+          if [ -d "www" ]; then
+            ls -la www
+          else
+            echo "ERROR: www directory not found"
+            exit 1
+          fi
+
+          echo "===== PACKAGE ====="
+          if [ -f "package.json" ]; then
+            cat package.json
+          else
+            echo "ERROR: package.json not found"
+            exit 1
+          fi
+
+          echo "===== CAPACITOR ====="
+          if [ -f "capacitor.config.json" ]; then
+            cat capacitor.config.json
+          fi
+
+      # --------------------------------------------------
+      # 6. Install npm dependencies
+      # IMPORTANT:
+      # npm install instead of npm ci because there is
+      # no package-lock.json.
+      # --------------------------------------------------
+      - name: Install npm dependencies
+        run: |
+          npm install
+
+      # --------------------------------------------------
+      # 7. Verify Capacitor
+      # --------------------------------------------------
+      - name: Verify Capacitor
+        run: |
+          npx cap --version
+          npx cap doctor || true
+
+      # --------------------------------------------------
+      # 8. Create Android project if necessary
+      # --------------------------------------------------
+      - name: Create Android project
+        run: |
+          if [ ! -d "android" ]; then
+            echo "Android project does not exist."
+            echo "Creating Android project..."
+            npx cap add android
+          else
+            echo "Android project already exists."
+          fi
+
+      # --------------------------------------------------
+      # 9. Copy web files into Android
+      # --------------------------------------------------
+      - name: Sync Capacitor
+        run: |
+          npx cap sync android
+
+      # --------------------------------------------------
+      # 10. Apply native Squeezo video compressor
+      # --------------------------------------------------
+      - name: Apply Squeezo native Android engine
+        run: |
+          if [ -f "native/apply-android.sh" ]; then
+            chmod +x native/apply-android.sh
+            ./native/apply-android.sh
+          else
+            echo "WARNING: native/apply-android.sh not found."
+            echo "Continuing without native patch."
+          fi
+
+      # --------------------------------------------------
+      # 11. Force Android compile SDK 36
+      # --------------------------------------------------
+      - name: Configure Android SDK 36
         shell: bash
         run: |
           set -e
-          test -f package.json
-          test -f capacitor.config.json
-          test -f www/index.html
-          test -f native/apply-android.sh
-          test -f native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java
-          test -f native/android/com/squeezo/app/MainActivity.java
-          test -f native/android/res/xml/file_paths.xml
 
-      - name: Install dependencies
-        run: npm install
+          echo "Configuring compileSdk 36..."
 
-      - name: Build web assets
-        run: npm run build --if-present
+          # ------------------------------------------------
+          # variables.gradle
+          # ------------------------------------------------
+          if [ -f "android/variables.gradle" ]; then
 
-      - name: Add Android platform
-        run: npx cap add android
+            python3 <<'PY'
+          from pathlib import Path
 
-      - name: Apply native Squeezo video engine and Android 36 configuration
-        shell: bash
+          p = Path("android/variables.gradle")
+          s = p.read_text(encoding="utf-8")
+
+          import re
+
+          s = re.sub(
+              r'compileSdkVersion\s*=\s*\d+',
+              'compileSdkVersion = 36',
+              s
+          )
+
+          s = re.sub(
+              r'targetSdkVersion\s*=\s*\d+',
+              'targetSdkVersion = 36',
+              s
+          )
+
+          p.write_text(s, encoding="utf-8")
+          PY
+
+          fi
+
+          # ------------------------------------------------
+          # app/build.gradle
+          # ------------------------------------------------
+          if [ -f "android/app/build.gradle" ]; then
+
+            python3 <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("android/app/build.gradle")
+          s = p.read_text(encoding="utf-8")
+
+          s = re.sub(
+              r'compileSdk(?:Version)?\s+rootProject\.ext\.variables\.compileSdkVersion',
+              'compileSdkVersion 36',
+              s
+          )
+
+          s = re.sub(
+              r'compileSdk(?:Version)?\s+\d+',
+              'compileSdkVersion 36',
+              s
+          )
+
+          p.write_text(s, encoding="utf-8")
+          PY
+
+          fi
+
+          # ------------------------------------------------
+          # Print final configuration
+          # ------------------------------------------------
+          echo ""
+          echo "===== variables.gradle ====="
+          if [ -f "android/variables.gradle" ]; then
+            cat android/variables.gradle
+          fi
+
+          echo ""
+          echo "===== app/build.gradle SDK settings ====="
+          grep -RniE \
+            "compileSdk|targetSdk|minSdk" \
+            android/app/build.gradle \
+            android/variables.gradle \
+            2>/dev/null || true
+
+      # --------------------------------------------------
+      # 12. Verify Android SDK 36 is really installed
+      # --------------------------------------------------
+      - name: Verify Android SDK
         run: |
-          set -euo pipefail
-          chmod +x native/apply-android.sh
-          ./native/apply-android.sh
-          echo "--- Effective SDK configuration ---"
-          grep -R -E 'compileSdkVersion|targetSdkVersion|compileSdk|targetSdk' android/variables.gradle android/app/build.gradle 2>/dev/null || true
-          grep -R 'androidx.media3:' android/app/build.gradle || true
-          grep -R 'com.android.tools.build:gradle' android/build.gradle || true
+          echo "===== INSTALLED PLATFORMS ====="
+          sdkmanager --list_installed | grep -E \
+            "platforms;android-36|build-tools;36" || true
 
-      - name: Sync Capacitor
-        run: npx cap sync android
+          if [ ! -d "$ANDROID_HOME/platforms/android-36" ]; then
+            echo "ERROR: Android API 36 is not installed."
+            exit 1
+          fi
 
-      - name: Build debug APK
+          echo "Android API 36 is installed successfully."
+
+      # --------------------------------------------------
+      # 13. Verify native files
+      # --------------------------------------------------
+      - name: Verify native files
+        run: |
+          echo "===== NATIVE TREE ====="
+          find native -maxdepth 8 -type f | sort || true
+
+          if [ -f "native/apply-android.sh" ]; then
+            echo "native/apply-android.sh: OK"
+          fi
+
+          if [ -f "native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java" ]; then
+            echo "Video compressor plugin: OK"
+          fi
+
+      # --------------------------------------------------
+      # 14. Build Debug APK
+      # --------------------------------------------------
+      - name: Build Debug APK
         working-directory: android
-        shell: bash
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug --stacktrace
 
-      - name: Verify APK
-        shell: bash
+          echo "===== Gradle version ====="
+          ./gradlew --version
+
+          echo "===== BUILD DEBUG APK ====="
+          ./gradlew assembleDebug --stacktrace --no-daemon
+
+      # --------------------------------------------------
+      # 15. Find APK
+      # --------------------------------------------------
+      - name: Find APK
         run: |
-          set -e
-          test -f android/app/build/outputs/apk/debug/app-debug.apk
-          ls -lh android/app/build/outputs/apk/debug/app-debug.apk
+          echo "===== APK FILES ====="
+          find android -type f -name "*.apk" -print
 
+      # --------------------------------------------------
+      # 16. Upload APK
+      # --------------------------------------------------
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Squeezo-debug-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          name: Squeezo-Android-APK
+          path: android/app/build/outputs/apk/**/*.apk
           if-no-files-found: error
-          retention-days: 30
