@@ -1,10 +1,11 @@
 {
-  "name":"Squeezo",
-  "short_name":"Squeezo",
-  "description":"Private image and video compressor",
-  "start_url":"./",
-  "display":"standalone",
-  "background_color":"#f5f7fb",
-  "theme_color":"#111827",
-  "icons":[]
+  "name": "Squeezo",
+  "short_name": "Squeezo",
+  "description": "Private offline media compressor",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8fc",
+  "theme_color": "#101828",
+  "icons": []
 }
