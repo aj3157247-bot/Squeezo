@@ -3,8 +3,7 @@ name: Build Squeezo Android APK
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
 
 permissions:
   contents: read
@@ -13,7 +12,6 @@ jobs:
   build:
     name: Build Squeezo APK
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -22,6 +20,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -29,7 +28,7 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      - name: Setup Android SDK 36
+      - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Install Android API 36
@@ -43,25 +42,13 @@ jobs:
         shell: bash
         run: |
           set -e
-          echo "Workspace: $GITHUB_WORKSPACE"
-          pwd
-          echo "--- root ---"
-          ls -la
-          echo "--- native ---"
-          ls -la native || true
-          echo "--- native files ---"
-          find native -maxdepth 6 -type f -print 2>/dev/null | sort || true
-
-          test -f "$GITHUB_WORKSPACE/package.json"
-          test -f "$GITHUB_WORKSPACE/capacitor.config.json"
-          test -f "$GITHUB_WORKSPACE/www/index.html"
-          test -f "$GITHUB_WORKSPACE/native/apply-android.sh"
-          test -f "$GITHUB_WORKSPACE/native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java"
-          test -f "$GITHUB_WORKSPACE/native/android/com/squeezo/app/MainActivity.java"
-          test -f "$GITHUB_WORKSPACE/native/android/res/xml/file_paths.xml"
-
-          rm -f "$GITHUB_WORKSPACE/capacitor.config.ts" "$GITHUB_WORKSPACE/capacitor.config.js"
-          echo "Repository layout OK"
+          test -f package.json
+          test -f capacitor.config.json
+          test -f www/index.html
+          test -f native/apply-android.sh
+          test -f native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java
+          test -f native/android/com/squeezo/app/MainActivity.java
+          test -f native/android/res/xml/file_paths.xml
 
       - name: Install dependencies
         run: npm install
@@ -72,19 +59,23 @@ jobs:
       - name: Add Android platform
         run: npx cap add android
 
-      - name: Apply native Squeezo video engine
+      - name: Apply native Squeezo video engine and Android 36 configuration
         shell: bash
         run: |
-          set -e
-          cd "$GITHUB_WORKSPACE"
+          set -euo pipefail
           chmod +x native/apply-android.sh
           ./native/apply-android.sh
+          echo "--- Effective SDK configuration ---"
+          grep -R -E 'compileSdkVersion|targetSdkVersion|compileSdk|targetSdk' android/variables.gradle android/app/build.gradle 2>/dev/null || true
+          grep -R 'androidx.media3:' android/app/build.gradle || true
+          grep -R 'com.android.tools.build:gradle' android/build.gradle || true
 
       - name: Sync Capacitor
         run: npx cap sync android
 
       - name: Build debug APK
         working-directory: android
+        shell: bash
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --stacktrace
@@ -93,8 +84,8 @@ jobs:
         shell: bash
         run: |
           set -e
-          test -f "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
-          ls -lh "$GITHUB_WORKSPACE/android/app/build/outputs/apk/debug/app-debug.apk"
+          test -f android/app/build/outputs/apk/debug/app-debug.apk
+          ls -lh android/app/build/outputs/apk/debug/app-debug.apk
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
