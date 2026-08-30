@@ -1,70 +1,193 @@
+const T={"en": {"name": "English", "tagline": "Private media toolkit", "eyebrow": "PRIVATE • FAST • OFFLINE READY", "heroA": "Compress your media", "heroB": "without the hassle.", "heroDesc": "Shrink photos and videos directly on your device. No uploads. No accounts required.", "videoCompressor": "Video Compressor", "videoSub": "Smart quality, smaller files", "imageCompressor": "Image Compressor", "imageSub": "High quality, tiny size", "fast": "Fast", "private": "Private", "offline": "Offline", "languages": "12+ languages", "moreTools": "More tools", "v1": "v1.0", "videoCutter": "Video Cutter", "videoMerger": "Video Merger", "videoMp3": "Video to Audio", "myFiles": "My Files", "coming": "Coming soon", "manage": "Saved locally", "home": "Home", "files": "Files", "tools": "Tools", "settings": "Settings", "dropTitle": "Select files", "dropSub": "Images and videos • multiple files supported", "chooseFiles": "Choose files", "localOnly": "Files are processed locally on this device.", "selected": "Selected files", "clear": "Clear", "preset": "Compression preset", "balanced": "Balanced", "balancedSub": "Best everyday choice", "small": "Small size", "smallSub": "More compression", "quality": "High quality", "qualitySub": "Keep more detail", "custom": "Custom", "customSub": "Tune settings", "resolution": "Resolution", "videoBitrate": "Video bitrate", "frameRate": "Frame rate", "videoFormat": "Video format", "imageQuality": "Image quality", "maxResolution": "Max resolution", "imageFormat": "Image format", "start": "Start compression", "results": "Results", "share": "Share", "localFiles": "Files saved during this session", "selectFirst": "Select at least one image or video.", "processing": "Processing", "done": "Done", "cancelled": "Cancelled", "videoUnsupported": "Video compression is not supported by this browser. Try the latest Chrome/Edge.", "videoFailed": "Video compression failed. Your original file was not uploaded.", "estimate": "Estimated output: ", "saved": "saved", "save": "Save", "shareFile": "Share", "original": "Original", "noFiles": "No saved files yet.", "theme": "Theme", "nothing": "Nothing to share yet."}, "fa": {"name": "دری", "tagline": "ابزار خصوصی رسانه", "eyebrow": "خصوصی • سریع • آماده آفلاین", "heroA": "رسانه‌های خود را", "heroB": "آسان کم‌حجم کنید.", "heroDesc": "عکس و ویدئو را مستقیم روی دستگاه خود کم‌حجم کنید؛ بدون آپلود و بدون نیاز به حساب.", "videoCompressor": "فشرده‌ساز ویدئو", "videoSub": "کیفیت هوشمند، حجم کمتر", "imageCompressor": "فشرده‌ساز عکس", "imageSub": "کیفیت بالا، حجم کم", "fast": "سریع", "private": "خصوصی", "offline": "آفلاین", "languages": "۱۲+ زبان", "moreTools": "ابزارهای بیشتر", "v1": "نسخه ۱", "videoCutter": "برش ویدئو", "videoMerger": "ادغام ویدئو", "videoMp3": "ویدئو به صدا", "myFiles": "فایل‌های من", "coming": "به‌زودی", "manage": "ذخیره محلی", "home": "خانه", "files": "فایل‌ها", "tools": "ابزارها", "settings": "تنظیمات", "dropTitle": "فایل‌ها را انتخاب کنید", "dropSub": "عکس و ویدئو • انتخاب چند فایل", "chooseFiles": "انتخاب فایل", "localOnly": "فایل‌ها روی همین دستگاه پردازش می‌شوند.", "selected": "فایل‌های انتخاب‌شده", "clear": "پاک کردن", "preset": "حالت فشرده‌سازی", "balanced": "متعادل", "balancedSub": "انتخاب مناسب روزمره", "small": "حجم کم", "smallSub": "فشرده‌سازی بیشتر", "quality": "کیفیت بالا", "qualitySub": "جزئیات بیشتر", "custom": "سفارشی", "customSub": "تنظیم دستی", "resolution": "وضوح", "videoBitrate": "بیت‌ریت ویدئو", "frameRate": "نرخ فریم", "videoFormat": "فرمت ویدئو", "imageQuality": "کیفیت عکس", "maxResolution": "حداکثر وضوح", "imageFormat": "فرمت عکس", "start": "شروع فشرده‌سازی", "results": "نتایج", "share": "اشتراک‌گذاری", "localFiles": "فایل‌های ذخیره‌شده در این نشست", "selectFirst": "حداقل یک عکس یا ویدئو انتخاب کنید.", "processing": "در حال پردازش", "done": "تمام شد", "cancelled": "لغو شد", "videoUnsupported": "مرورگر شما فشرده‌سازی ویدئو را پشتیبانی نمی‌کند. Chrome یا Edge جدید را امتحان کنید.", "videoFailed": "فشرده‌سازی ویدئو ناموفق بود. فایل اصلی آپلود نشده است.", "estimate": "حجم تقریبی خروجی: ", "saved": "کاهش", "save": "ذخیره", "shareFile": "اشتراک", "original": "اصلی", "noFiles": "هنوز فایل ذخیره‌شده‌ای وجود ندارد.", "theme": "پوسته", "nothing": "هنوز چیزی برای اشتراک‌گذاری نیست."}, "ps": {"name": "پښتو", "tagline": "د رسنیو شخصي وسیلې", "eyebrow": "خصوصي • چټک • آفلاین", "heroA": "خپل رسنیز فایلونه", "heroB": "په اسانۍ کم کړئ.", "heroDesc": "عکسونه او ویډیوګانې په خپل وسیله کې کم‌حجمه کړئ؛ نه اپلوډ شته او نه حساب ته اړتیا.", "videoCompressor": "د ویډیو کمپرسور", "videoSub": "هوښیار کیفیت، لږ حجم", "imageCompressor": "د عکس کمپرسور", "imageSub": "لوړ کیفیت، لږ حجم", "fast": "چټک", "private": "خصوصي", "offline": "آفلاین", "languages": "۱۲+ ژبې", "moreTools": "نورې وسیلې", "v1": "نسخه ۱", "videoCutter": "ویډیو پرې کول", "videoMerger": "ویډیو یوځای کول", "videoMp3": "ویډیو غږ ته", "myFiles": "زما فایلونه", "coming": "ژر راځي", "manage": "په وسیله کې خوندي", "home": "کور", "files": "فایلونه", "tools": "وسیلې", "settings": "تنظیمات", "dropTitle": "فایلونه وټاکئ", "dropSub": "عکسونه او ویډیوګانې • څو فایلونه", "chooseFiles": "فایلونه وټاکئ", "localOnly": "فایلونه په همدې وسیله کې پروسس کېږي.", "selected": "ټاکل شوي فایلونه", "clear": "پاکول", "preset": "د کمپرس حالت", "balanced": "متوازن", "balancedSub": "د ورځني استعمال لپاره", "small": "لږ حجم", "smallSub": "ډېر کمپرس", "quality": "لوړ کیفیت", "qualitySub": "ډېر جزئیات", "custom": "ځانګړی", "customSub": "لاسي تنظیم", "resolution": "ریزولوشن", "videoBitrate": "ویډیو بټ‌ریټ", "frameRate": "فریم‌ریټ", "videoFormat": "د ویډیو بڼه", "imageQuality": "د عکس کیفیت", "maxResolution": "اعظمي ریزولوشن", "imageFormat": "د عکس بڼه", "start": "کمپرس پیل کړئ", "results": "پایلې", "share": "شریکول", "localFiles": "په دې ناسته کې خوندي شوي فایلونه", "selectFirst": "لږ تر لږه یو عکس یا ویډیو وټاکئ.", "processing": "پروسس کېږي", "done": "بشپړ شو", "cancelled": "لغوه شو", "videoUnsupported": "ستاسو براوزر د ویډیو کمپرس ملاتړ نه کوي. وروستی Chrome/Edge وکاروئ.", "videoFailed": "د ویډیو کمپرس ناکام شو. اصلي فایل اپلوډ شوی نه دی.", "estimate": "اټکلي پایله: ", "saved": "کم شوی", "save": "خوندي کول", "shareFile": "شریکول", "original": "اصلي", "noFiles": "تر اوسه خوندي فایل نشته.", "theme": "بڼه", "nothing": "تر اوسه د شریکولو لپاره څه نشته."}, "ar": {"name": "العربية", "tagline": "أدوات وسائط خاصة", "eyebrow": "خاص • سريع • جاهز دون اتصال", "heroA": "اضغط ملفاتك", "heroB": "بسهولة.", "heroDesc": "صغّر الصور والفيديوهات مباشرة على جهازك، بدون رفع وبدون حساب.", "videoCompressor": "ضاغط الفيديو", "videoSub": "جودة ذكية وحجم أصغر", "imageCompressor": "ضاغط الصور", "imageSub": "جودة عالية وحجم صغير", "fast": "سريع", "private": "خاص", "offline": "دون اتصال", "languages": "12+ لغة", "moreTools": "أدوات إضافية", "v1": "الإصدار 1", "videoCutter": "قص الفيديو", "videoMerger": "دمج الفيديو", "videoMp3": "فيديو إلى صوت", "myFiles": "ملفاتي", "coming": "قريباً", "manage": "محفوظ محلياً", "home": "الرئيسية", "files": "الملفات", "tools": "الأدوات", "settings": "الإعدادات", "dropTitle": "اختر الملفات", "dropSub": "صور وفيديو • دعم ملفات متعددة", "chooseFiles": "اختيار الملفات", "localOnly": "تتم معالجة الملفات على هذا الجهاز.", "selected": "الملفات المحددة", "clear": "مسح", "preset": "إعداد الضغط", "balanced": "متوازن", "balancedSub": "أفضل خيار يومي", "small": "حجم صغير", "smallSub": "ضغط أكبر", "quality": "جودة عالية", "qualitySub": "تفاصيل أكثر", "custom": "مخصص", "customSub": "ضبط يدوي", "resolution": "الدقة", "videoBitrate": "معدل بت الفيديو", "frameRate": "معدل الإطارات", "videoFormat": "تنسيق الفيديو", "imageQuality": "جودة الصورة", "maxResolution": "أقصى دقة", "imageFormat": "تنسيق الصورة", "start": "بدء الضغط", "results": "النتائج", "share": "مشاركة", "localFiles": "الملفات المحفوظة خلال هذه الجلسة", "selectFirst": "اختر صورة أو فيديو واحداً على الأقل.", "processing": "جارٍ المعالجة", "done": "تم", "cancelled": "أُلغي", "videoUnsupported": "هذا المتصفح لا يدعم ضغط الفيديو. جرّب أحدث Chrome أو Edge.", "videoFailed": "فشل ضغط الفيديو. لم يتم رفع الملف الأصلي.", "estimate": "الحجم المتوقع: ", "saved": "تم التوفير", "save": "حفظ", "shareFile": "مشاركة", "original": "الأصلي", "noFiles": "لا توجد ملفات محفوظة بعد.", "theme": "المظهر", "nothing": "لا يوجد شيء للمشاركة بعد."}, "es": {"name": "Español", "tagline": "Kit multimedia privado", "eyebrow": "PRIVADO • RÁPIDO • SIN CONEXIÓN", "heroA": "Comprime tus archivos", "heroB": "sin complicaciones.", "heroDesc": "Reduce fotos y vídeos directamente en tu dispositivo. Sin subidas y sin cuentas.", "videoCompressor": "Compresor de vídeo", "videoSub": "Calidad inteligente, menos tamaño", "imageCompressor": "Compresor de imágenes", "imageSub": "Alta calidad, poco tamaño", "fast": "Rápido", "private": "Privado", "offline": "Sin conexión", "languages": "12+ idiomas", "moreTools": "Más herramientas", "v1": "v1.0", "videoCutter": "Cortar vídeo", "videoMerger": "Unir vídeos", "videoMp3": "Vídeo a audio", "myFiles": "Mis archivos", "coming": "Próximamente", "manage": "Guardado local", "home": "Inicio", "files": "Archivos", "tools": "Herramientas", "settings": "Ajustes", "dropTitle": "Selecciona archivos", "dropSub": "Imágenes y vídeos • varios archivos", "chooseFiles": "Elegir archivos", "localOnly": "Los archivos se procesan en este dispositivo.", "selected": "Archivos seleccionados", "clear": "Borrar", "preset": "Preajuste de compresión", "balanced": "Equilibrado", "balancedSub": "Mejor opción diaria", "small": "Tamaño pequeño", "smallSub": "Más compresión", "quality": "Alta calidad", "qualitySub": "Más detalle", "custom": "Personalizado", "customSub": "Ajuste manual", "resolution": "Resolución", "videoBitrate": "Bitrate de vídeo", "frameRate": "Fotogramas", "videoFormat": "Formato de vídeo", "imageQuality": "Calidad de imagen", "maxResolution": "Resolución máxima", "imageFormat": "Formato de imagen", "start": "Iniciar compresión", "results": "Resultados", "share": "Compartir", "localFiles": "Archivos guardados en esta sesión", "selectFirst": "Selecciona al menos una imagen o vídeo.", "processing": "Procesando", "done": "Listo", "cancelled": "Cancelado", "videoUnsupported": "Este navegador no admite compresión de vídeo. Prueba Chrome/Edge actualizado.", "videoFailed": "No se pudo comprimir el vídeo. El archivo original no se subió.", "estimate": "Salida estimada: ", "saved": "ahorrado", "save": "Guardar", "shareFile": "Compartir", "original": "Original", "noFiles": "Aún no hay archivos guardados.", "theme": "Tema", "nothing": "Todavía no hay nada para compartir."}, "fr": {"name": "Français", "tagline": "Kit média privé", "eyebrow": "PRIVÉ • RAPIDE • HORS LIGNE", "heroA": "Compressez vos médias", "heroB": "sans effort.", "heroDesc": "Réduisez photos et vidéos directement sur votre appareil. Aucun envoi, aucun compte.", "videoCompressor": "Compresseur vidéo", "videoSub": "Qualité intelligente, fichier plus léger", "imageCompressor": "Compresseur d’images", "imageSub": "Haute qualité, petit fichier", "fast": "Rapide", "private": "Privé", "offline": "Hors ligne", "languages": "12+ langues", "moreTools": "Plus d’outils", "v1": "v1.0", "videoCutter": "Découper vidéo", "videoMerger": "Fusionner vidéos", "videoMp3": "Vidéo vers audio", "myFiles": "Mes fichiers", "coming": "Bientôt", "manage": "Enregistré localement", "home": "Accueil", "files": "Fichiers", "tools": "Outils", "settings": "Réglages", "dropTitle": "Sélectionner des fichiers", "dropSub": "Images et vidéos • plusieurs fichiers", "chooseFiles": "Choisir des fichiers", "localOnly": "Les fichiers sont traités sur cet appareil.", "selected": "Fichiers sélectionnés", "clear": "Effacer", "preset": "Préréglage", "balanced": "Équilibré", "balancedSub": "Meilleur choix quotidien", "small": "Petit fichier", "smallSub": "Plus de compression", "quality": "Haute qualité", "qualitySub": "Plus de détails", "custom": "Personnalisé", "customSub": "Réglage manuel", "resolution": "Résolution", "videoBitrate": "Débit vidéo", "frameRate": "Images/s", "videoFormat": "Format vidéo", "imageQuality": "Qualité image", "maxResolution": "Résolution max", "imageFormat": "Format image", "start": "Démarrer la compression", "results": "Résultats", "share": "Partager", "localFiles": "Fichiers enregistrés pendant cette session", "selectFirst": "Sélectionnez au moins une image ou une vidéo.", "processing": "Traitement", "done": "Terminé", "cancelled": "Annulé", "videoUnsupported": "Ce navigateur ne prend pas en charge la compression vidéo. Essayez Chrome/Edge récent.", "videoFailed": "Échec de la compression vidéo. Le fichier original n’a pas été envoyé.", "estimate": "Sortie estimée : ", "saved": "économisé", "save": "Enregistrer", "shareFile": "Partager", "original": "Original", "noFiles": "Aucun fichier enregistré.", "theme": "Thème", "nothing": "Rien à partager pour le moment."}, "de": {"name": "Deutsch", "tagline": "Privates Medien-Toolkit", "eyebrow": "PRIVAT • SCHNELL • OFFLINE", "heroA": "Medien komprimieren", "heroB": "ganz einfach.", "heroDesc": "Fotos und Videos direkt auf deinem Gerät verkleinern. Kein Upload, kein Konto.", "videoCompressor": "Videokompressor", "videoSub": "Intelligente Qualität, kleinere Dateien", "imageCompressor": "Bildkompressor", "imageSub": "Hohe Qualität, kleine Dateien", "fast": "Schnell", "private": "Privat", "offline": "Offline", "languages": "12+ Sprachen", "moreTools": "Weitere Tools", "v1": "v1.0", "videoCutter": "Video schneiden", "videoMerger": "Videos verbinden", "videoMp3": "Video zu Audio", "myFiles": "Meine Dateien", "coming": "Bald", "manage": "Lokal gespeichert", "home": "Start", "files": "Dateien", "tools": "Tools", "settings": "Einstellungen", "dropTitle": "Dateien auswählen", "dropSub": "Bilder und Videos • mehrere Dateien", "chooseFiles": "Dateien wählen", "localOnly": "Dateien werden auf diesem Gerät verarbeitet.", "selected": "Ausgewählte Dateien", "clear": "Löschen", "preset": "Komprimierung", "balanced": "Ausgewogen", "balancedSub": "Beste Alltagswahl", "small": "Kleine Größe", "smallSub": "Mehr Kompression", "quality": "Hohe Qualität", "qualitySub": "Mehr Details", "custom": "Benutzerdefiniert", "customSub": "Manuell einstellen", "resolution": "Auflösung", "videoBitrate": "Video-Bitrate", "frameRate": "Bildrate", "videoFormat": "Videoformat", "imageQuality": "Bildqualität", "maxResolution": "Max. Auflösung", "imageFormat": "Bildformat", "start": "Komprimierung starten", "results": "Ergebnisse", "share": "Teilen", "localFiles": "In dieser Sitzung gespeicherte Dateien", "selectFirst": "Mindestens ein Bild oder Video auswählen.", "processing": "Verarbeitung", "done": "Fertig", "cancelled": "Abgebrochen", "videoUnsupported": "Dieser Browser unterstützt keine Videokomprimierung. Bitte aktuelles Chrome/Edge nutzen.", "videoFailed": "Videokomprimierung fehlgeschlagen. Die Originaldatei wurde nicht hochgeladen.", "estimate": "Geschätzte Ausgabe: ", "saved": "gespart", "save": "Speichern", "shareFile": "Teilen", "original": "Original", "noFiles": "Noch keine gespeicherten Dateien.", "theme": "Design", "nothing": "Noch nichts zum Teilen."}, "pt": {"name": "Português", "tagline": "Kit de mídia privado", "eyebrow": "PRIVADO • RÁPIDO • OFFLINE", "heroA": "Comprima suas mídias", "heroB": "sem complicação.", "heroDesc": "Reduza fotos e vídeos diretamente no dispositivo. Sem uploads e sem conta.", "videoCompressor": "Compressor de vídeo", "videoSub": "Qualidade inteligente, arquivos menores", "imageCompressor": "Compressor de imagens", "imageSub": "Alta qualidade, pouco tamanho", "fast": "Rápido", "private": "Privado", "offline": "Offline", "languages": "12+ idiomas", "moreTools": "Mais ferramentas", "v1": "v1.0", "videoCutter": "Cortar vídeo", "videoMerger": "Juntar vídeos", "videoMp3": "Vídeo para áudio", "myFiles": "Meus arquivos", "coming": "Em breve", "manage": "Salvo localmente", "home": "Início", "files": "Arquivos", "tools": "Ferramentas", "settings": "Configurações", "dropTitle": "Selecionar arquivos", "dropSub": "Imagens e vídeos • vários arquivos", "chooseFiles": "Escolher arquivos", "localOnly": "Os arquivos são processados neste dispositivo.", "selected": "Arquivos selecionados", "clear": "Limpar", "preset": "Predefinição", "balanced": "Equilibrado", "balancedSub": "Melhor opção diária", "small": "Tamanho pequeno", "smallSub": "Mais compressão", "quality": "Alta qualidade", "qualitySub": "Mais detalhes", "custom": "Personalizado", "customSub": "Ajuste manual", "resolution": "Resolução", "videoBitrate": "Bitrate do vídeo", "frameRate": "FPS", "videoFormat": "Formato do vídeo", "imageQuality": "Qualidade da imagem", "maxResolution": "Resolução máxima", "imageFormat": "Formato da imagem", "start": "Iniciar compressão", "results": "Resultados", "share": "Compartilhar", "localFiles": "Arquivos salvos nesta sessão", "selectFirst": "Selecione pelo menos uma imagem ou vídeo.", "processing": "Processando", "done": "Concluído", "cancelled": "Cancelado", "videoUnsupported": "Este navegador não suporta compressão de vídeo. Tente o Chrome/Edge atualizado.", "videoFailed": "Falha ao comprimir o vídeo. O arquivo original não foi enviado.", "estimate": "Saída estimada: ", "saved": "economizado", "save": "Salvar", "shareFile": "Compartilhar", "original": "Original", "noFiles": "Ainda não há arquivos salvos.", "theme": "Tema", "nothing": "Nada para compartilhar ainda."}, "tr": {"name": "Türkçe", "tagline": "Özel medya araçları", "eyebrow": "ÖZEL • HIZLI • ÇEVRİMDIŞI", "heroA": "Medyanı sıkıştır", "heroB": "zahmetsizce.", "heroDesc": "Fotoğraf ve videoları doğrudan cihazında küçült. Yükleme yok, hesap yok.", "videoCompressor": "Video sıkıştırıcı", "videoSub": "Akıllı kalite, daha küçük dosya", "imageCompressor": "Görüntü sıkıştırıcı", "imageSub": "Yüksek kalite, küçük boyut", "fast": "Hızlı", "private": "Özel", "offline": "Çevrimdışı", "languages": "12+ dil", "moreTools": "Daha fazla araç", "v1": "v1.0", "videoCutter": "Video kesici", "videoMerger": "Video birleştirici", "videoMp3": "Videodan sese", "myFiles": "Dosyalarım", "coming": "Yakında", "manage": "Yerel kaydedildi", "home": "Ana sayfa", "files": "Dosyalar", "tools": "Araçlar", "settings": "Ayarlar", "dropTitle": "Dosya seç", "dropSub": "Görüntü ve video • çoklu seçim", "chooseFiles": "Dosya seç", "localOnly": "Dosyalar bu cihazda işlenir.", "selected": "Seçilen dosyalar", "clear": "Temizle", "preset": "Sıkıştırma ayarı", "balanced": "Dengeli", "balancedSub": "Günlük kullanım", "small": "Küçük boyut", "smallSub": "Daha fazla sıkıştırma", "quality": "Yüksek kalite", "qualitySub": "Daha fazla ayrıntı", "custom": "Özel", "customSub": "Manuel ayar", "resolution": "Çözünürlük", "videoBitrate": "Video bit hızı", "frameRate": "Kare hızı", "videoFormat": "Video biçimi", "imageQuality": "Görüntü kalitesi", "maxResolution": "Maks. çözünürlük", "imageFormat": "Görüntü biçimi", "start": "Sıkıştırmayı başlat", "results": "Sonuçlar", "share": "Paylaş", "localFiles": "Bu oturumda kaydedilen dosyalar", "selectFirst": "En az bir görüntü veya video seç.", "processing": "İşleniyor", "done": "Tamamlandı", "cancelled": "İptal edildi", "videoUnsupported": "Bu tarayıcı video sıkıştırmayı desteklemiyor. Güncel Chrome/Edge deneyin.", "videoFailed": "Video sıkıştırılamadı. Orijinal dosya yüklenmedi.", "estimate": "Tahmini çıktı: ", "saved": "tasarruf", "save": "Kaydet", "shareFile": "Paylaş", "original": "Orijinal", "noFiles": "Henüz kayıtlı dosya yok.", "theme": "Tema", "nothing": "Paylaşılacak bir şey yok."}, "hi": {"name": "हिन्दी", "tagline": "निजी मीडिया टूलकिट", "eyebrow": "निजी • तेज़ • ऑफलाइन", "heroA": "अपनी मीडिया", "heroB": "आसानी से छोटी करें।", "heroDesc": "फ़ोटो और वीडियो सीधे अपने डिवाइस पर छोटा करें। कोई अपलोड या अकाउंट नहीं।", "videoCompressor": "वीडियो कंप्रेसर", "videoSub": "स्मार्ट क्वालिटी, छोटा आकार", "imageCompressor": "इमेज कंप्रेसर", "imageSub": "उच्च गुणवत्ता, छोटा आकार", "fast": "तेज़", "private": "निजी", "offline": "ऑफलाइन", "languages": "12+ भाषाएँ", "moreTools": "और टूल", "v1": "v1.0", "videoCutter": "वीडियो काटें", "videoMerger": "वीडियो जोड़ें", "videoMp3": "वीडियो से ऑडियो", "myFiles": "मेरी फ़ाइलें", "coming": "जल्द", "manage": "लोकल सेव", "home": "होम", "files": "फ़ाइलें", "tools": "टूल्स", "settings": "सेटिंग्स", "dropTitle": "फ़ाइलें चुनें", "dropSub": "इमेज और वीडियो • कई फ़ाइलें", "chooseFiles": "फ़ाइलें चुनें", "localOnly": "फ़ाइलें इसी डिवाइस पर प्रोसेस होती हैं।", "selected": "चुनी गई फ़ाइलें", "clear": "साफ़ करें", "preset": "कंप्रेशन प्रीसेट", "balanced": "संतुलित", "balancedSub": "दैनिक उपयोग के लिए", "small": "छोटा आकार", "smallSub": "अधिक कंप्रेशन", "quality": "उच्च गुणवत्ता", "qualitySub": "अधिक विवरण", "custom": "कस्टम", "customSub": "मैनुअल सेटिंग", "resolution": "रिज़ॉल्यूशन", "videoBitrate": "वीडियो बिटरेट", "frameRate": "फ्रेम रेट", "videoFormat": "वीडियो फ़ॉर्मेट", "imageQuality": "इमेज क्वालिटी", "maxResolution": "अधिकतम रिज़ॉल्यूशन", "imageFormat": "इमेज फ़ॉर्मेट", "start": "कंप्रेशन शुरू करें", "results": "परिणाम", "share": "शेयर", "localFiles": "इस सेशन में सेव फ़ाइलें", "selectFirst": "कम से कम एक इमेज या वीडियो चुनें।", "processing": "प्रोसेस हो रहा है", "done": "पूरा हुआ", "cancelled": "रद्द", "videoUnsupported": "यह ब्राउज़र वीडियो कंप्रेशन नहीं करता। नया Chrome/Edge आज़माएँ।", "videoFailed": "वीडियो कंप्रेशन विफल हुआ। मूल फ़ाइल अपलोड नहीं हुई।", "estimate": "अनुमानित आउटपुट: ", "saved": "बचत", "save": "सेव", "shareFile": "शेयर", "original": "मूल", "noFiles": "अभी कोई सेव फ़ाइल नहीं है।", "theme": "थीम", "nothing": "शेयर करने के लिए कुछ नहीं है।"}, "zh": {"name": "中文", "tagline": "私密媒体工具箱", "eyebrow": "私密 • 快速 • 支持离线", "heroA": "轻松压缩", "heroB": "你的媒体文件。", "heroDesc": "直接在设备上缩小照片和视频。无需上传，无需账号。", "videoCompressor": "视频压缩", "videoSub": "智能画质，更小文件", "imageCompressor": "图片压缩", "imageSub": "高质量，小体积", "fast": "快速", "private": "私密", "offline": "离线", "languages": "12+ 语言", "moreTools": "更多工具", "v1": "v1.0", "videoCutter": "视频剪辑", "videoMerger": "视频合并", "videoMp3": "视频转音频", "myFiles": "我的文件", "coming": "即将推出", "manage": "本地保存", "home": "首页", "files": "文件", "tools": "工具", "settings": "设置", "dropTitle": "选择文件", "dropSub": "图片和视频 • 支持多选", "chooseFiles": "选择文件", "localOnly": "文件在此设备上处理。", "selected": "已选文件", "clear": "清除", "preset": "压缩预设", "balanced": "均衡", "balancedSub": "日常最佳选择", "small": "小体积", "smallSub": "更多压缩", "quality": "高质量", "qualitySub": "保留更多细节", "custom": "自定义", "customSub": "手动调整", "resolution": "分辨率", "videoBitrate": "视频码率", "frameRate": "帧率", "videoFormat": "视频格式", "imageQuality": "图片质量", "maxResolution": "最大分辨率", "imageFormat": "图片格式", "start": "开始压缩", "results": "结果", "share": "分享", "localFiles": "本次会话保存的文件", "selectFirst": "至少选择一个图片或视频。", "processing": "处理中", "done": "完成", "cancelled": "已取消", "videoUnsupported": "此浏览器不支持视频压缩。请尝试最新版 Chrome/Edge。", "videoFailed": "视频压缩失败。原文件未上传。", "estimate": "预计输出：", "saved": "节省", "save": "保存", "shareFile": "分享", "original": "原始", "noFiles": "暂无保存文件。", "theme": "主题", "nothing": "暂无可分享内容。"}, "ru": {"name": "Русский", "tagline": "Приватный медиакомплект", "eyebrow": "ПРИВАТНО • БЫСТРО • ОФЛАЙН", "heroA": "Сжимайте медиа", "heroB": "без лишних действий.", "heroDesc": "Уменьшайте фото и видео прямо на устройстве. Без загрузки и аккаунта.", "videoCompressor": "Сжатие видео", "videoSub": "Умное качество, меньший размер", "imageCompressor": "Сжатие изображений", "imageSub": "Высокое качество, малый размер", "fast": "Быстро", "private": "Приватно", "offline": "Офлайн", "languages": "12+ языков", "moreTools": "Другие инструменты", "v1": "v1.0", "videoCutter": "Обрезка видео", "videoMerger": "Объединение видео", "videoMp3": "Видео в аудио", "myFiles": "Мои файлы", "coming": "Скоро", "manage": "Сохранено локально", "home": "Главная", "files": "Файлы", "tools": "Инструменты", "settings": "Настройки", "dropTitle": "Выберите файлы", "dropSub": "Изображения и видео • несколько файлов", "chooseFiles": "Выбрать файлы", "localOnly": "Файлы обрабатываются на этом устройстве.", "selected": "Выбранные файлы", "clear": "Очистить", "preset": "Профиль сжатия", "balanced": "Баланс", "balancedSub": "Лучший выбор на каждый день", "small": "Малый размер", "smallSub": "Больше сжатия", "quality": "Высокое качество", "qualitySub": "Больше деталей", "custom": "Свой", "customSub": "Ручная настройка", "resolution": "Разрешение", "videoBitrate": "Битрейт видео", "frameRate": "Частота кадров", "videoFormat": "Формат видео", "imageQuality": "Качество изображения", "maxResolution": "Макс. разрешение", "imageFormat": "Формат изображения", "start": "Начать сжатие", "results": "Результаты", "share": "Поделиться", "localFiles": "Файлы, сохранённые в этой сессии", "selectFirst": "Выберите хотя бы изображение или видео.", "processing": "Обработка", "done": "Готово", "cancelled": "Отменено", "videoUnsupported": "Этот браузер не поддерживает сжатие видео. Используйте новый Chrome/Edge.", "videoFailed": "Не удалось сжать видео. Исходный файл не загружался.", "estimate": "Ожидаемый результат: ", "saved": "сэкономлено", "save": "Сохранить", "shareFile": "Поделиться", "original": "Оригинал", "noFiles": "Сохранённых файлов пока нет.", "theme": "Тема", "nothing": "Пока нечем делиться."}, "id": {"name": "Bahasa Indonesia", "tagline": "Toolkit media privat", "eyebrow": "PRIVAT • CEPAT • OFFLINE", "heroA": "Kompres media", "heroB": "tanpa ribet.", "heroDesc": "Kecilkan foto dan video langsung di perangkat. Tanpa upload dan tanpa akun.", "videoCompressor": "Kompresor video", "videoSub": "Kualitas cerdas, file lebih kecil", "imageCompressor": "Kompresor gambar", "imageSub": "Kualitas tinggi, ukuran kecil", "fast": "Cepat", "private": "Privat", "offline": "Offline", "languages": "12+ bahasa", "moreTools": "Alat lainnya", "v1": "v1.0", "videoCutter": "Potong video", "videoMerger": "Gabung video", "videoMp3": "Video ke audio", "myFiles": "File saya", "coming": "Segera hadir", "manage": "Disimpan lokal", "home": "Beranda", "files": "File", "tools": "Alat", "settings": "Pengaturan", "dropTitle": "Pilih file", "dropSub": "Gambar dan video • banyak file", "chooseFiles": "Pilih file", "localOnly": "File diproses di perangkat ini.", "selected": "File terpilih", "clear": "Hapus", "preset": "Preset kompresi", "balanced": "Seimbang", "balancedSub": "Pilihan harian terbaik", "small": "Ukuran kecil", "smallSub": "Lebih banyak kompresi", "quality": "Kualitas tinggi", "qualitySub": "Lebih banyak detail", "custom": "Kustom", "customSub": "Atur manual", "resolution": "Resolusi", "videoBitrate": "Bitrate video", "frameRate": "Frame rate", "videoFormat": "Format video", "imageQuality": "Kualitas gambar", "maxResolution": "Resolusi maks.", "imageFormat": "Format gambar", "start": "Mulai kompresi", "results": "Hasil", "share": "Bagikan", "localFiles": "File yang disimpan dalam sesi ini", "selectFirst": "Pilih setidaknya satu gambar atau video.", "processing": "Memproses", "done": "Selesai", "cancelled": "Dibatalkan", "videoUnsupported": "Browser ini tidak mendukung kompresi video. Coba Chrome/Edge terbaru.", "videoFailed": "Kompresi video gagal. File asli tidak diunggah.", "estimate": "Perkiraan hasil: ", "saved": "hemat", "save": "Simpan", "shareFile": "Bagikan", "original": "Asli", "noFiles": "Belum ada file tersimpan.", "theme": "Tema", "nothing": "Belum ada yang bisa dibagikan."}};
 const $=id=>document.getElementById(id);
-const state={files:[],results:[]};
-const input=$('fileInput'), drop=$('dropzone'), list=$('fileList'), queue=$('queue'), results=$('results');
+const state={mode:null,files:[],results:[],preset:"balanced",busy:false};
+let objectUrls=[];
+const langCodes=Object.keys(T);
+const lang=$("lang");
+lang.innerHTML=langCodes.map(k=>`<option value="${k}">${T[k].name}</option>`).join("");
+const navLang=(navigator.language||"en").toLowerCase().slice(0,2);
+lang.value=T[localStorage.getItem("squeezo-lang")]?localStorage.getItem("squeezo-lang"):(T[navLang]?navLang:"en");
 
-$('selectBtn').onclick=()=>input.click();
-input.onchange=e=>addFiles([...e.target.files]);
-['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('active')}));
-['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('active')}));
-drop.addEventListener('drop',e=>addFiles([...e.dataTransfer.files]));
-$('clearBtn').onclick=()=>{state.files=[];state.results=[];render()};
-$('quality').oninput=e=>$('qualityValue').textContent=e.target.value+'%';
+function tr(k){return (T[lang.value]||T.en)[k]||T.en[k]||k}
+function applyLang(){
+  const l=lang.value;
+  document.documentElement.lang=l;
+  document.documentElement.dir=["fa","ps","ar"].includes(l)?"rtl":"ltr";
+  document.querySelectorAll("[data-t]").forEach(el=>el.textContent=tr(el.dataset.t));
+  if(state.mode) setModeTitle();
+  localStorage.setItem("squeezo-lang",l);
+  renderFiles(); renderResults(); updateEstimate();
+}
+lang.onchange=applyLang;
 
+$("themeBtn").onclick=()=>{document.body.classList.toggle("dark");localStorage.setItem("squeezo-theme",document.body.classList.contains("dark")?"dark":"light")};
+if(localStorage.getItem("squeezo-theme")==="dark")document.body.classList.add("dark");
+
+function show(view){
+  $("homeView").hidden=view!=="home";$("compressView").hidden=view!=="compress";$("filesView").hidden=view!=="files";
+  document.querySelectorAll(".nav").forEach(n=>n.classList.remove("active"));
+  if(view==="home")$("navHome").classList.add("active");
+  if(view==="files")$("navFiles").classList.add("active");
+}
+function setModeTitle(){
+  $("pageTitle").textContent=state.mode==="video"?tr("videoCompressor"):tr("imageCompressor");
+  $("pageSub").textContent=state.mode==="video"?tr("videoSub"):tr("imageSub");
+  $("videoSettings").hidden=state.mode!=="video"; $("imageSettings").hidden=state.mode!=="image";
+}
+function openMode(mode){state.mode=mode;state.files=[];state.results=[];$("resultsPanel").hidden=true;$("settingsPanel").hidden=true;renderFiles();setModeTitle();show("compress")}
+$("videoMode").onclick=()=>openMode("video");
+$("imageMode").onclick=()=>openMode("image");
+$("backBtn").onclick=()=>show("home");
+$("filesBack").onclick=()=>show("home");
+$("navHome").onclick=()=>show("home");
+$("navFiles").onclick=()=>{show("files");renderSaved()};
+$("navPlus").onclick=()=>openMode("video");
+$("navTools").onclick=()=>show("home");
+$("navSettings").onclick=()=>{toast(tr("theme"));};
+
+$("pickBtn").onclick=()=>$("picker").click();
+$("picker").onchange=e=>addFiles([...e.target.files]);
+const drop=$("drop");
+["dragenter","dragover"].forEach(x=>drop.addEventListener(x,e=>{e.preventDefault();drop.classList.add("drag")}));
+["dragleave","drop"].forEach(x=>drop.addEventListener(x,e=>{e.preventDefault();drop.classList.remove("drag")}));
+drop.addEventListener("drop",e=>addFiles([...e.dataTransfer.files]));
 function addFiles(files){
-  state.files.push(...files.filter(f=>f.type.startsWith('image/')||f.type.startsWith('video/')));
-  render();
+  const wanted=files.filter(f=>state.mode==="video"?f.type.startsWith("video/"):f.type.startsWith("image/"));
+  state.files.push(...wanted);
+  if(wanted.length){$("settingsPanel").hidden=false;updateEstimate();renderFiles()}
 }
-function fmt(n){if(n<1024)return n+' B';let u=['KB','MB','GB'],i=-1;do{n/=1024;i++}while(n>=1024&&i<u.length-1);return n.toFixed(n<10?2:1)+' '+u[i]}
-function render(){
-  queue.hidden=state.files.length===0;
-  list.innerHTML=state.files.map((f,i)=>`<div class="file">
-    <div class="thumb"></div><div class="file-info"><div class="name">${esc(f.name)}</div><div class="meta">${fmt(f.size)} • ${f.type||'file'}</div></div>
-    <button class="remove" data-i="${i}">×</button></div>`).join('');
-  list.querySelectorAll('.remove').forEach(b=>b.onclick=()=>{state.files.splice(+b.dataset.i,1);render()});
-  $('compressBtn').disabled=!state.files.length;
+$("clearBtn").onclick=()=>{state.files=[];state.results=[];$("settingsPanel").hidden=true;$("resultsPanel").hidden=true;renderFiles()};
+function fmt(n){
+  if(n<1024)return n+" B";let u=["KB","MB","GB"],i=-1;do{n/=1024;i++}while(n>=1024&&i<u.length-1);
+  return n.toFixed(n<10?2:1)+" "+u[i];
 }
-function esc(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function renderFiles(){
+  $("filesPanel").hidden=!state.files.length;
+  $("fileList").innerHTML=state.files.map((f,i)=>`<div class="file"><div class="file-icon">${state.mode==="video"?"▶":"▧"}</div><div class="file-info"><div class="file-name">${esc(f.name)}</div><div class="file-meta">${fmt(f.size)} • ${esc(f.type||"file")}</div></div><button class="remove" data-i="${i}">×</button></div>`).join("");
+  $("fileList").querySelectorAll(".remove").forEach(b=>b.onclick=()=>{state.files.splice(+b.dataset.i,1);renderFiles();if(!state.files.length)$("settingsPanel").hidden=true;updateEstimate()});
+}
+document.querySelectorAll(".preset").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".preset").forEach(x=>x.classList.remove("active"));b.classList.add("active");state.preset=b.dataset.preset;
+  const p=state.preset;
+  if(p==="small"){$("resolution").value="720";$("bitrate").value=1800}
+  if(p==="balanced"){$("resolution").value="1080";$("bitrate").value=3500}
+  if(p==="quality"){$("resolution").value="original";$("bitrate").value=6500}
+  if(p==="custom"){}
+  updateBitrate();updateEstimate();
+});
+$("bitrate").oninput=()=>{updateBitrate();updateEstimate()};
+$("resolution").onchange=updateEstimate;
+$("fps").onchange=updateEstimate;
+$("quality").oninput=()=>{$("qualityOut").value=$("quality").value+"%";$("qualityOut").textContent=$("quality").value+"%";updateEstimate()};
+$("imageMax").onchange=updateEstimate;
+function updateBitrate(){$("bitrateOut").textContent=(+$("bitrate").value/1000).toFixed(1)+" Mbps"}
 
-$('compressBtn').onclick=compressAll;
-async function compressAll(){
-  const imageFiles=state.files.filter(f=>f.type.startsWith('image/'));
-  const videoFiles=state.files.filter(f=>f.type.startsWith('video/'));
-  state.results=[]; setProgress(0);
-  for(let i=0;i<imageFiles.length;i++){
-    state.results.push(await compressImage(imageFiles[i]));
-    setProgress(Math.round(((i+1)/state.files.length)*100));
+async function updateEstimate(){
+  if(!state.files.length)return;
+  if(state.mode==="image"){
+    const q=+$("quality").value/100, factor=.22+.55*(1-q);
+    $("estimate").textContent=tr("estimate")+fmt(Math.round(state.files.reduce((a,f)=>a+f.size,0)*factor));
+  }else{
+    const total=state.files.reduce((a,f)=>a+f.size,0), kbps=+$("bitrate").value, mins=Math.max(.5,state.files.length);
+    $("estimate").textContent=tr("estimate")+"~"+fmt(Math.round(kbps*125*60*mins));
   }
-  for(let i=0;i<videoFiles.length;i++){
-    state.results.push({file:videoFiles[i],blob:null,error:'Video compression engine will be enabled in the next build. The file was not uploaded.'});
-    setProgress(Math.round(((imageFiles.length+i+1)/state.files.length)*100));
-  }
-  renderResults(); setProgress(100);
 }
+
+$("startBtn").onclick=async()=>{
+  if(state.busy)return;
+  if(!state.files.length){toast(tr("selectFirst"));return}
+  state.busy=true;$("startBtn").disabled=true;$("progressBox").hidden=false;$("resultsPanel").hidden=true;state.results=[];
+  for(let i=0;i<state.files.length;i++){
+    setProgress(Math.round(i/state.files.length*100),state.files[i].name);
+    let r;
+    try{r=state.mode==="image"?await compressImage(state.files[i]):await compressVideo(state.files[i])}
+    catch(e){r={file:state.files[i],error:e?.message||tr("videoFailed")}}
+    state.results.push(r);setProgress(Math.round((i+1)/state.files.length*100),state.files[i].name);
+  }
+  state.busy=false;$("startBtn").disabled=false;$("resultsPanel").hidden=false;renderResults();
+};
+function setProgress(v,name){$("progressBar").style.width=v+"%";$("progressText").textContent=v+"%";$("progressInfo").textContent=name||""}
+
 async function compressImage(file){
-  try{
-    const bmp=await createImageBitmap(file);
-    const max=4096, scale=Math.min(1,max/Math.max(bmp.width,bmp.height));
-    const canvas=document.createElement('canvas');
-    canvas.width=Math.max(1,Math.round(bmp.width*scale));canvas.height=Math.max(1,Math.round(bmp.height*scale));
-    canvas.getContext('2d').drawImage(bmp,0,0,canvas.width,canvas.height);
-    const type=$('format').value,q=+$('quality').value/100;
-    const blob=await new Promise(r=>canvas.toBlob(r,type,q));
-    return {file,blob};
-  }catch(error){return {file,blob:null,error:error.message}}
+  const bmp=await createImageBitmap(file);
+  const max=+$("imageMax").value||Math.max(bmp.width,bmp.height);
+  const scale=Math.min(1,max/Math.max(bmp.width,bmp.height));
+  const c=document.createElement("canvas");c.width=Math.max(1,Math.round(bmp.width*scale));c.height=Math.max(1,Math.round(bmp.height*scale));
+  c.getContext("2d",{alpha:false}).drawImage(bmp,0,0,c.width,c.height);
+  const type=$("imageFormat").value,q=+$("quality").value/100;
+  const blob=await new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Error("Image compression failed")),type,q));
+  return {file,blob,name:baseName(file.name)+"."+((type==="image/webp")?"webp":"jpg")};
 }
-function renderResults(){
-  results.hidden=false;
-  $('resultList').innerHTML=state.results.map(r=>{
-    if(!r.blob)return `<div class="result"><b>${esc(r.file.name)}</b><div class="sizes">${esc(r.error||'Could not compress')}</div></div>`;
-    const url=URL.createObjectURL(r.blob), saved=Math.max(0,Math.round((1-r.blob.size/r.file.size)*100));
-    const ext=r.blob.type==='image/webp'?'webp':'jpg', base=r.file.name.replace(/\.[^.]+$/,'');
-    return `<div class="result"><b>${esc(r.file.name)}</b><div class="sizes">${fmt(r.file.size)} → ${fmt(r.blob.size)} • ${saved}% smaller</div><a class="save" download="${esc(base+'.'+ext)}" href="${url}">Save file</a></div>`;
-  }).join('');
-}
-function setProgress(v){$('progress').hidden=false;$('bar').style.width=v+'%';$('progressText').textContent=v+'%'}
+function baseName(n){return n.replace(/\.[^.]+$/,"")}
 
-if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(console.warn));
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;$('installBtn').hidden=false});
-$('installBtn').onclick=async()=>{if(!deferredPrompt)return;deferredPrompt.prompt();deferredPrompt=null;$('installBtn').hidden=true};
-render();
+async function compressVideo(file){
+  if(!("MediaRecorder" in window)||!HTMLVideoElement.prototype.captureStream&&!HTMLVideoElement.prototype.mozCaptureStream)throw new Error(tr("videoUnsupported"));
+  const video=document.createElement("video");video.src=URL.createObjectURL(file);video.muted=false;video.playsInline=true;video.preload="auto";
+  await new Promise((res,rej)=>{video.onloadedmetadata=res;video.onerror=()=>rej(new Error(tr("videoFailed")))});
+  const max=parseInt($("resolution").value)||Math.max(video.videoWidth,video.videoHeight);
+  const scale=Math.min(1,max/Math.max(video.videoWidth,video.videoHeight));
+  const w=Math.max(2,Math.round(video.videoWidth*scale/2)*2),h=Math.max(2,Math.round(video.videoHeight*scale/2)*2);
+  const canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;
+  const ctx=canvas.getContext("2d");
+  const fps=$("fps").value==="original"?Math.min(60,video.frameRate||30):parseInt($("fps").value);
+  const canvasStream=canvas.captureStream(fps);
+  const sourceStream=(video.captureStream?video.captureStream():video.mozCaptureStream());
+  const audioTracks=sourceStream.getAudioTracks();
+  audioTracks.forEach(t=>canvasStream.addTrack(t));
+  const bitrate=+$("bitrate").value*1000;
+  const candidates=["video/webm;codecs=vp9,opus","video/webm;codecs=vp8,opus","video/webm"];
+  let mime=candidates.find(x=>MediaRecorder.isTypeSupported(x));
+  if(!mime && $("videoFormat").value==="mp4"){
+    const mp4s=["video/mp4;codecs=avc1.42E01E,mp4a.40.2","video/mp4"];
+    mime=mp4s.find(x=>MediaRecorder.isTypeSupported(x));
+  }
+  if(!mime)throw new Error(tr("videoUnsupported"));
+  const chunks=[];
+  const rec=new MediaRecorder(canvasStream,{mimeType:mime,videoBitsPerSecond:bitrate,audioBitsPerSecond:128000});
+  rec.ondataavailable=e=>{if(e.data.size)chunks.push(e.data)};
+  const ended=new Promise((resolve,reject)=>{rec.onstop=resolve;rec.onerror=e=>reject(e.error||new Error(tr("videoFailed")))});
+  const draw=()=>{if(video.ended)return;ctx.drawImage(video,0,0,w,h);setProgress(Math.min(99,Math.round(video.currentTime/video.duration*100)),file.name);requestAnimationFrame(draw)};
+  video.currentTime=0;
+  await video.play();
+  rec.start(500);
+  draw();
+  await new Promise(resolve=>video.onended=resolve);
+  if(rec.state!=="inactive")rec.stop();
+  await ended;
+  canvasStream.getTracks().forEach(t=>t.stop());
+  video.pause();URL.revokeObjectURL(video.src);
+  const outType=mime.split(";")[0],blob=new Blob(chunks,{type:outType});
+  if(!blob.size)throw new Error(tr("videoFailed"));
+  return {file,blob,name:baseName(file.name)+"."+(outType==="video/mp4"?"mp4":"webm")};
+}
+
+function renderResults(){
+  objectUrls.forEach(u=>URL.revokeObjectURL(u));objectUrls=[];
+  $("results").innerHTML=state.results.map((r,i)=>{
+    if(r.error)return `<div class="result"><div class="result-top"><b>${esc(r.file.name)}</b></div><div class="result-size">${esc(r.error)}</div></div>`;
+    const url=URL.createObjectURL(r.blob);objectUrls.push(url);
+    const savePct=Math.max(0,Math.round((1-r.blob.size/r.file.size)*100));
+    return `<div class="result"><div class="result-top"><b>${esc(r.name)}</b><span>✓</span></div><div class="result-size">${fmt(r.file.size)} → ${fmt(r.blob.size)} • ${savePct}% ${tr("saved")}</div><a class="save" href="${url}" download="${esc(r.name)}">${tr("save")}</a><button class="save share" data-share="${i}">${tr("shareFile")}</button></div>`;
+  }).join("");
+  $("results").querySelectorAll("[data-share]").forEach(b=>b.onclick=()=>shareResult(+b.dataset.share));
+}
+async function shareResult(i){
+  const r=state.results[i];if(!r?.blob){toast(tr("nothing"));return}
+  try{
+    const f=new File([r.blob],r.name,{type:r.blob.type});
+    if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[f]})))await navigator.share({files:[f],title:"Squeezo"});
+    else toast(tr("save"));
+  }catch(e){}
+}
+$("shareAll").onclick=async()=>{const first=state.results.findIndex(r=>r.blob);if(first>=0)shareResult(first);else toast(tr("nothing"))};
+
+function renderSaved(){
+  const el=$("savedFiles"), arr=JSON.parse(localStorage.getItem("squeezo-history")||"[]");
+  if(!arr.length){el.innerHTML=`<div class="empty">${tr("noFiles")}</div>`;return}
+  el.innerHTML=arr.slice(-30).reverse().map(x=>`<div class="file"><div class="file-icon">${x.type.startsWith("video")?"▶":"▧"}</div><div class="file-info"><div class="file-name">${esc(x.name)}</div><div class="file-meta">${fmt(x.size)} • ${new Date(x.date).toLocaleString()}</div></div></div>`).join("");
+}
+function toast(s){$("toast").textContent=s;$("toast").hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>$("toast").hidden=true,2200)}
+
+applyLang();
+show("home");
