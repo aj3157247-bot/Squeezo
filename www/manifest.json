@@ -1,0 +1,11 @@
+{
+  "name": "Squeezo",
+  "short_name": "Squeezo",
+  "description": "Private offline media compressor",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f8fc",
+  "theme_color": "#101828",
+  "icons": []
+}
