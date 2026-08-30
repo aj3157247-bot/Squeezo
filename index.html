@@ -1,58 +1,115 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#111827">
-  <meta name="description" content="Squeezo — compress images and videos privately in your browser.">
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
-  <title>Squeezo</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101828">
+<meta name="description" content="Squeezo — private offline image and video compressor.">
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css">
+<title>Squeezo</title>
 </head>
 <body>
-  <main class="app">
-    <header class="topbar">
-      <div class="brand"><span class="logo">S</span><span>Squeezo</span></div>
-      <button id="installBtn" class="icon-btn" hidden aria-label="Install Squeezo">＋</button>
-    </header>
+<div id="toast" class="toast" hidden></div>
+<header class="topbar">
+  <div class="brand"><span class="brand-mark">S</span><div><b>Squeezo</b><small data-t="tagline"></small></div></div>
+  <div class="top-actions">
+    <select id="lang" aria-label="Language"></select>
+    <button id="themeBtn" class="round-btn" aria-label="Theme">☼</button>
+  </div>
+</header>
 
-    <section class="hero">
-      <span class="badge">PRIVATE • FAST • OFFLINE READY</span>
-      <h1>Make your media<br><span>smaller.</span></h1>
-      <p>Compress images and videos on your device. Your files stay private.</p>
-    </section>
+<main>
+<section id="homeView" class="view">
+  <div class="hero">
+    <span class="eyebrow" data-t="eyebrow"></span>
+    <h1><span data-t="heroA"></span><br><em data-t="heroB"></em></h1>
+    <p data-t="heroDesc"></p>
+  </div>
 
-    <section class="dropzone" id="dropzone">
-      <input id="fileInput" type="file" accept="image/*,video/*" multiple hidden>
-      <div class="upload-icon">↑</div>
-      <h2>Select files</h2>
-      <p>Images or videos • You can choose multiple files</p>
-      <button id="selectBtn" class="primary">Choose files</button>
-      <small>Nothing is uploaded to a server.</small>
-    </section>
+  <div class="hero-grid">
+    <button class="mode-card video" id="videoMode">
+      <span class="mode-icon">▶</span><div><strong data-t="videoCompressor"></strong><small data-t="videoSub"></small></div><span>›</span>
+    </button>
+    <button class="mode-card image" id="imageMode">
+      <span class="mode-icon">▧</span><div><strong data-t="imageCompressor"></strong><small data-t="imageSub"></small></div><span>›</span>
+    </button>
+  </div>
 
-    <section id="queue" class="queue" hidden>
-      <div class="section-head"><h2>Your files</h2><button id="clearBtn" class="text-btn">Clear</button></div>
-      <div id="fileList"></div>
-      <div class="controls">
-        <label>Image quality <strong id="qualityValue">80%</strong>
-          <input id="quality" type="range" min="40" max="95" value="80">
-        </label>
-        <label>Image format
-          <select id="format"><option value="image/webp">WebP</option><option value="image/jpeg">JPEG</option></select>
-        </label>
+  <div class="feature-row">
+    <div><b>⚡</b><span data-t="fast"></span></div><div><b>🔒</b><span data-t="private"></span></div><div><b>📴</b><span data-t="offline"></span></div><div><b>🌍</b><span data-t="languages"></span></div>
+  </div>
+
+  <section class="tools">
+    <div class="section-title"><h2 data-t="moreTools"></h2><span data-t="v1"></span></div>
+    <div class="tool-grid">
+      <button class="tool disabled"><span>✂️</span><b data-t="videoCutter"></b><small data-t="coming"></small></button>
+      <button class="tool disabled"><span>🔗</span><b data-t="videoMerger"></b><small data-t="coming"></small></button>
+      <button class="tool disabled"><span>🎵</span><b data-t="videoMp3"></b><small data-t="coming"></small></button>
+      <button class="tool" id="filesMode"><span>📁</span><b data-t="myFiles"></b><small data-t="manage"></small></button>
+    </div>
+  </section>
+</section>
+
+<section id="compressView" class="view" hidden>
+  <div class="page-head"><button id="backBtn" class="back">‹</button><div><h2 id="pageTitle"></h2><p id="pageSub"></p></div></div>
+  <div id="drop" class="drop">
+    <input id="picker" type="file" multiple hidden accept="image/*,video/*">
+    <div class="drop-icon">＋</div><h3 data-t="dropTitle"></h3><p data-t="dropSub"></p>
+    <button id="pickBtn" class="primary" data-t="chooseFiles"></button>
+    <small data-t="localOnly"></small>
+  </div>
+
+  <div id="filesPanel" class="panel" hidden>
+    <div class="panel-head"><h3 data-t="selected"></h3><button id="clearBtn" class="link" data-t="clear"></button></div>
+    <div id="fileList"></div>
+  </div>
+
+  <div id="settingsPanel" class="panel" hidden>
+    <div class="panel-head"><h3 data-t="settings"></h3></div>
+
+    <div id="videoSettings" hidden>
+      <label class="label" data-t="preset"></label>
+      <div class="preset-grid">
+        <button class="preset active" data-preset="balanced"><b data-t="balanced"></b><small data-t="balancedSub"></small></button>
+        <button class="preset" data-preset="small"><b data-t="small"></b><small data-t="smallSub"></small></button>
+        <button class="preset" data-preset="quality"><b data-t="quality"></b><small data-t="qualitySub"></small></button>
+        <button class="preset" data-preset="custom"><b data-t="custom"></b><small data-t="customSub"></small></button>
       </div>
-      <button id="compressBtn" class="primary wide">Compress selected files</button>
-      <div id="progress" class="progress" hidden><div id="bar"></div><span id="progressText">0%</span></div>
-    </section>
+      <div class="setting-row"><label data-t="resolution"></label><select id="resolution"><option value="original">Original</option><option value="2160">4K</option><option value="1080" selected>1080p</option><option value="720">720p</option><option value="480">480p</option><option value="360">360p</option></select></div>
+      <div class="setting-row"><label data-t="videoBitrate"></label><div class="range-wrap"><input id="bitrate" type="range" min="300" max="12000" step="100" value="3500"><output id="bitrateOut">3.5 Mbps</output></div></div>
+      <div class="setting-row"><label data-t="frameRate"></label><select id="fps"><option value="original">Original</option><option>24</option><option selected>30</option><option>60</option></select></div>
+      <div class="setting-row"><label data-t="videoFormat"></label><select id="videoFormat"><option value="auto">Auto (WebM/MP4)</option><option value="webm">WebM</option><option value="mp4">MP4 when supported</option></select></div>
+    </div>
 
-    <section id="results" class="results" hidden>
-      <div class="section-head"><h2>Results</h2></div>
-      <div id="resultList"></div>
-    </section>
+    <div id="imageSettings" hidden>
+      <div class="setting-row"><label data-t="imageQuality"></label><div class="range-wrap"><input id="quality" type="range" min="40" max="100" value="88"><output id="qualityOut">88%</output></div></div>
+      <div class="setting-row"><label data-t="maxResolution"></label><select id="imageMax"><option value="original">Original</option><option value="4096" selected>Up to 4K</option><option value="2560">Up to 2.5K</option><option value="1920">1080p</option><option value="1280">720p</option></select></div>
+      <div class="setting-row"><label data-t="imageFormat"></label><select id="imageFormat"><option value="image/webp">WebP</option><option value="image/jpeg">JPEG</option></select></div>
+    </div>
 
-    <footer><span>🔒 Files stay on your device</span><span>•</span><span>Squeezo v1.0</span></footer>
-  </main>
-  <script src="app.js"></script>
+    <div id="estimate" class="estimate"></div>
+    <button id="startBtn" class="primary wide" data-t="start"></button>
+    <div id="progressBox" class="progress-box" hidden><div class="progress"><i id="progressBar"></i></div><div class="progress-meta"><span id="progressText">0%</span><span id="progressInfo"></span></div></div>
+  </div>
+
+  <div id="resultsPanel" class="panel" hidden><div class="panel-head"><h3 data-t="results"></h3><button id="shareAll" class="link" data-t="share"></button></div><div id="results"></div></div>
+</section>
+
+<section id="filesView" class="view" hidden>
+  <div class="page-head"><button id="filesBack" class="back">‹</button><div><h2 data-t="myFiles"></h2><p data-t="localFiles"></p></div></div>
+  <div id="savedFiles" class="panel"></div>
+</section>
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav active" id="navHome">⌂<span data-t="home"></span></button>
+  <button class="nav" id="navFiles">▣<span data-t="files"></span></button>
+  <button class="nav nav-plus" id="navPlus">＋</button>
+  <button class="nav" id="navTools">✦<span data-t="tools"></span></button>
+  <button class="nav" id="navSettings">⚙<span data-t="settings"></span></button>
+</nav>
+
+<script src="app.js"></script>
 </body>
 </html>
