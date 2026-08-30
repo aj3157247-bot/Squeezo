@@ -18,171 +18,222 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: "17"
-
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
-      - name: Install Android SDK 36
+      - name: Show project files
+        shell: bash
         run: |
-          yes | sdkmanager --licenses >/dev/null || true
-          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
-
-      - name: Install npm packages
-        run: npm install --no-audit --no-fund
-
-      - name: Create Android project if needed
-        run: |
-          set -e
-          if [ ! -f android/gradlew ]; then
-            npx cap add android
+          set -eux
+          echo "Workspace: $PWD"
+          echo "=== ROOT ==="
+          ls -la
+          echo "=== NATIVE ==="
+          if [ -d native ]; then
+            find native -maxdepth 8 -type f | sort
+          else
+            echo "native directory does not exist"
           fi
+          echo "=== WWW ==="
+          if [ -d www ]; then
+            find www -maxdepth 2 -type f | sort | head -100
+          fi
+
+      - name: Install npm dependencies
+        shell: bash
+        run: |
+          set -eux
+
+          if [ ! -f package.json ]; then
+            echo "ERROR: package.json not found"
+            exit 1
+          fi
+
+          npm install --no-audit --no-fund
+
+      - name: Verify Capacitor
+        shell: bash
+        run: |
+          set -eux
+
+          npx cap --version
+          echo "=== Capacitor config ==="
+
+          if [ -f capacitor.config.json ]; then
+            cat capacitor.config.json
+          elif [ -f capacitor.config.ts ]; then
+            cat capacitor.config.ts
+          else
+            echo "ERROR: Capacitor config not found"
+            exit 1
+          fi
+
+      - name: Prepare web assets
+        shell: bash
+        run: |
+          set -eux
+
+          if [ ! -d www ]; then
+            echo "ERROR: www directory not found"
+            exit 1
+          fi
+
+          if [ ! -f www/index.html ]; then
+            echo "ERROR: www/index.html not found"
+            exit 1
+          fi
+
+          echo "Web assets are ready."
+
+      - name: Add Android platform if needed
+        shell: bash
+        run: |
+          set -eux
+
+          if [ ! -d android ]; then
+            echo "Android project does not exist."
+            echo "Creating Android project..."
+
+            npx cap add android
+          else
+            echo "Android project already exists."
+          fi
+
+      - name: Sync Capacitor
+        shell: bash
+        run: |
+          set -eux
+
           npx cap sync android
 
-      - name: Configure Android API 36
+      - name: Apply native Squeezo video engine
+        shell: bash
         run: |
-          set -e
+          set -eux
 
-          python3 <<'PY'
-          from pathlib import Path
-          import re
+          if [ -f native/apply-android.sh ]; then
+            echo "Found native/apply-android.sh"
 
-          app = Path("android/app/build.gradle")
-          if not app.exists():
-              raise SystemExit("ERROR: android/app/build.gradle not found")
-
-          s = app.read_text()
-
-          if re.search(r'compileSdk(?:Version)?\s+', s):
-              s = re.sub(r'compileSdk(?:Version)?\s+\d+', 'compileSdk 36', s)
-          else:
-              s = s.replace('android {', 'android {\n    compileSdk 36', 1)
-
-          if re.search(r'targetSdk(?:Version)?\s+', s):
-              s = re.sub(r'targetSdk(?:Version)?\s+\d+', 'targetSdk 36', s)
-
-          deps = '''
-              implementation "androidx.media3:media3-transformer:1.10.1"
-              implementation "androidx.media3:media3-effect:1.10.1"
-              implementation "androidx.media3:media3-common:1.10.1"
-          '''
-
-          if "androidx.media3:media3-transformer" not in s:
-              if "dependencies {" not in s:
-                  raise SystemExit("ERROR: dependencies block not found")
-              s = s.replace("dependencies {", "dependencies {" + deps, 1)
-
-          app.write_text(s)
-
-          root = Path("android/build.gradle")
-          if root.exists():
-              r = root.read_text()
-              r = re.sub(
-                  r'com\.android\.tools\.build:gradle:\d+\.\d+\.\d+',
-                  'com.android.tools.build:gradle:8.9.1',
-                  r
-              )
-              r = re.sub(
-                  r"(com\.android\.application['"]?\s*version\s*['"])[0-9.]+(['"])",
-                  r"\g<1>8.9.1\g<2>",
-                  r
-              )
-              r = re.sub(
-                  r"(com\.android\.library['"]?\s*version\s*['"])[0-9.]+(['"])",
-                  r"\g<1>8.9.1\g<2>",
-                  r
-              )
-              root.write_text(r)
-
-          wrapper = Path("android/gradle/wrapper/gradle-wrapper.properties")
-          if wrapper.exists():
-              w = wrapper.read_text()
-              w = re.sub(
-                  r'gradle-[0-9.]+-all\.zip',
-                  'gradle-8.11.1-all.zip',
-                  w
-              )
-              wrapper.write_text(w)
-          PY
-
-      - name: Apply native video compressor
-        run: |
-          set -e
-
-          if [ -f native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java ]; then
-            SRC=native/android
-          elif [ -f native/native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java ]; then
-            SRC=native/native/android
+            chmod +x native/apply-android.sh
+            ./native/apply-android.sh
           else
-            echo "Native compressor source not found; continuing with web implementation."
-            exit 0
+            echo "native/apply-android.sh not found."
+            echo "Continuing without native patch."
           fi
 
-          APP=android/app
-          mkdir -p "$APP/src/main/java/com/squeezo/app"
-          mkdir -p "$APP/src/main/res/xml"
-
-          cp "$SRC/com/squeezo/app/SqueezoVideoCompressorPlugin.java"              "$APP/src/main/java/com/squeezo/app/SqueezoVideoCompressorPlugin.java"
-
-          if [ -f "$SRC/com/squeezo/app/MainActivity.java" ]; then
-            cp "$SRC/com/squeezo/app/MainActivity.java"                "$APP/src/main/java/com/squeezo/app/MainActivity.java"
-          fi
-
-          cp "$SRC/res/xml/file_paths.xml"              "$APP/src/main/res/xml/file_paths.xml"
-
-          python3 <<'PY'
-          from pathlib import Path
-
-          p = Path("android/app/src/main/AndroidManifest.xml")
-          if not p.exists():
-              raise SystemExit("ERROR: AndroidManifest.xml not found")
-
-          s = p.read_text()
-
-          if "androidx.core.content.FileProvider" not in s:
-              provider = '''
-                  <provider
-                      android:name="androidx.core.content.FileProvider"
-                      android:authorities="${applicationId}.fileprovider"
-                      android:exported="false"
-                      android:grantUriPermissions="true">
-                      <meta-data
-                          android:name="android.support.FILE_PROVIDER_PATHS"
-                          android:resource="@xml/file_paths" />
-                  </provider>
-              '''
-              s = s.replace("</application>", provider + "\n    </application>", 1)
-
-          p.write_text(s)
-          PY
-
-      - name: Verify files
+      - name: Verify Android project
+        shell: bash
         run: |
-          set -e
-          test -f android/gradlew
-          test -f android/app/build.gradle
-          test -f android/app/src/main/AndroidManifest.xml
-          echo "Android project is ready."
+          set -eux
+
+          if [ ! -d android ]; then
+            echo "ERROR: android directory was not created."
+            exit 1
+          fi
+
+          if [ ! -f android/gradlew ]; then
+            echo "ERROR: android/gradlew not found."
+            exit 1
+          fi
+
+          echo "=== Android project ==="
+          ls -la android
+
+          echo "=== Gradle version ==="
+          cd android
+          chmod +x gradlew
+          ./gradlew --version
+
+      - name: Configure Android SDK
+        shell: bash
+        run: |
+          set -eux
+
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
+
+          sdkmanager --list_installed || true
+
+          yes | sdkmanager --licenses >/dev/null || true
+
+          sdkmanager \
+            "platform-tools" \
+            "platforms;android-36" \
+            "build-tools;35.0.0" \
+            "build-tools;36.0.0" || true
+
+      - name: Set compile SDK to 36
+        shell: bash
+        run: |
+          set -eux
+
+          if [ ! -f android/app/build.gradle ]; then
+            echo "ERROR: android/app/build.gradle not found"
+            exit 1
+          fi
+
+          echo "=== BEFORE ==="
+          grep -n -E "compileSdk|targetSdk|minSdk" android/app/build.gradle || true
+
+          sed -i -E 's/compileSdk[[:space:]]+[0-9]+/compileSdk 36/g' android/app/build.gradle
+          sed -i -E 's/compileSdkVersion[[:space:]]+[0-9]+/compileSdkVersion 36/g' android/app/build.gradle
+
+          echo "=== AFTER ==="
+          grep -n -E "compileSdk|targetSdk|minSdk" android/app/build.gradle || true
+
+      - name: Check Media3 dependencies
+        shell: bash
+        run: |
+          set -eux
+
+          echo "=== Media3 references ==="
+          grep -Rni "androidx.media3" android/app android 2>/dev/null || true
 
       - name: Build Debug APK
-        working-directory: android
+        shell: bash
         run: |
+          set -eux
+
+          cd android
           chmod +x gradlew
-          ./gradlew --no-daemon --stacktrace assembleDebug
+
+          echo "Starting Gradle build..."
+          ./gradlew assembleDebug --stacktrace --info --no-daemon
+
+      - name: Find APK
+        if: always()
+        shell: bash
+        run: |
+          set +e
+
+          echo "=== APK FILES ==="
+
+          if [ -d android ]; then
+            find android -type f \
+              \( -name "*.apk" -o -name "*.aab" \) \
+              -print
+          fi
 
       - name: Upload APK
+        if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: Squeezo-debug-apk
-          path: android/app/build/outputs/apk/debug/*.apk
+          name: squeezo-debug-apk
+          path: |
+            android/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
+
+      - name: Upload Gradle reports on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: squeezo-gradle-reports
+          path: |
+            android/app/build/reports/**
+            android/build/reports/**
+            android/app/build/outputs/logs/**
+          if-no-files-found: ignore
+          retention-days: 7
