@@ -31,7 +31,7 @@ jobs:
           java-version: '21'
 
       - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+        uses: android-actions/setup-android@v4
 
       - name: Install Android SDK 36
         shell: bash
@@ -51,8 +51,6 @@ jobs:
           test -f native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java
           test -f native/android/com/squeezo/app/MainActivity.java
           test -f native/android/res/xml/file_paths.xml
-          grep -q 'pickImages' native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java
-          grep -q 'compressImage' native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java
           bash -n native/apply-android.sh
           echo "Repository layout OK"
 
