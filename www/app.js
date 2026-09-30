@@ -49,10 +49,16 @@ $("navSettings").onclick=()=>{toast(tr("theme"));};
 
 $("pickBtn").onclick=async()=>{
   const native=window.Capacitor?.Plugins?.SqueezoVideoCompressor;
-  if(state.mode==="video" && native){
+  if(native && (state.mode==="video" || state.mode==="image")){
     try{
-      const r=await native.pickVideos();
-      const picked=(r?.files||[]).map(x=>({nativePath:x.path,name:x.name||"video",size:Number(x.size||0),type:x.mimeType||"video/*"}));
+      const method=state.mode==="video"?"pickVideos":"pickImages";
+      const r=await native[method]();
+      const picked=(r?.files||[]).map(x=>({
+        nativePath:x.path,
+        name:x.name||(state.mode==="video"?"video":"image"),
+        size:Number(x.size||0),
+        type:x.mimeType||(state.mode==="video"?"video/*":"image/*")
+      }));
       state.files.push(...picked);
       if(picked.length){$("settingsPanel").hidden=false;updateEstimate();renderFiles();}
     }catch(e){if(e?.message&&e.message!=="Picker cancelled")toast(e.message)}
@@ -124,14 +130,40 @@ $("startBtn").onclick=async()=>{
 function setProgress(v,name){$("progressBar").style.width=v+"%";$("progressText").textContent=v+"%";$("progressInfo").textContent=name||""}
 
 async function compressImage(file){
-  const bmp=await createImageBitmap(file);
-  const max=+$("imageMax").value||Math.max(bmp.width,bmp.height);
-  const scale=Math.min(1,max/Math.max(bmp.width,bmp.height));
-  const c=document.createElement("canvas");c.width=Math.max(1,Math.round(bmp.width*scale));c.height=Math.max(1,Math.round(bmp.height*scale));
-  c.getContext("2d",{alpha:false}).drawImage(bmp,0,0,c.width,c.height);
-  const type=$("imageFormat").value,q=+$("quality").value/100;
-  const blob=await new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Error("Image compression failed")),type,q));
-  return {file,blob,name:baseName(file.name)+"."+((type==="image/webp")?"webp":"jpg")};
+  const native=window.Capacitor?.Plugins?.SqueezoVideoCompressor;
+  if(native && file?.nativePath){
+    const max=parseInt($("imageMax").value)||0;
+    const quality=Math.max(1,Math.min(100,+$("quality").value||88));
+    const format=$("imageFormat").value==="image/jpeg"?"jpeg":"webp";
+    const result=await native.compressImage({path:file.nativePath,quality,maxSize:max,format});
+    return {file,native:true,nativeResult:result,name:result.name||((file.name||"image").replace(/\.[^.]+$/,'')+'.'+format)};
+  }
+
+  // Browser fallback: HTMLImageElement is more compatible than createImageBitmap
+  // in Android WebView and handles File/Blob URLs more reliably.
+  const url=URL.createObjectURL(file);
+  try{
+    const img=await new Promise((resolve,reject)=>{
+      const el=new Image();
+      el.onload=()=>resolve(el);
+      el.onerror=()=>reject(new Error("Image could not be decoded. Please choose a JPG, PNG, WebP, or another supported image."));
+      el.src=url;
+    });
+    const requestedMax=parseInt($("imageMax").value);
+    const max=Number.isFinite(requestedMax)&&requestedMax>0?requestedMax:Math.max(img.naturalWidth,img.naturalHeight);
+    const scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+    const c=document.createElement("canvas");
+    c.width=Math.max(1,Math.round(img.naturalWidth*scale));
+    c.height=Math.max(1,Math.round(img.naturalHeight*scale));
+    const ctx=c.getContext("2d",{alpha:false});
+    if(!ctx)throw new Error("Image compression is not available on this device.");
+    ctx.drawImage(img,0,0,c.width,c.height);
+    const type=$("imageFormat").value,q=Math.max(.01,Math.min(1,(+$('quality').value||88)/100));
+    const blob=await new Promise((res,rej)=>c.toBlob(b=>b?res(b):rej(new Error("Image compression failed")),type,q));
+    return {file,blob,name:baseName(file.name)+"."+((type==="image/webp")?"webp":"jpg")};
+  }finally{
+    URL.revokeObjectURL(url);
+  }
 }
 function baseName(n){return n.replace(/\.[^.]+$/,"")}
 
@@ -178,7 +210,7 @@ async function shareResult(i){
   const r=state.results[i];if(!r){toast(tr("nothing"));return}
   try{
     const native=window.Capacitor?.Plugins?.SqueezoVideoCompressor;
-    if(r.native&&native){await native.share({uri:r.nativeResult.uri||r.nativeResult.path,mimeType:"video/mp4",name:r.name});return;}
+    if(r.native&&native){await native.share({uri:r.nativeResult.uri||r.nativeResult.path,mimeType:r.nativeResult.mimeType||(state.mode==="image"?"image/webp":"video/mp4"),name:r.name});return;}
     if(!r.blob){toast(tr("nothing"));return}
     const f=new File([r.blob],r.name,{type:r.blob.type});
     if(navigator.share&&(!navigator.canShare||navigator.canShare({files:[f]})))await navigator.share({files:[f],title:"Squeezo"});else toast(tr("save"));
