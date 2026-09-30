@@ -1,14 +1,14 @@
-# Squeezo native video compression fix
+# Squeezo native media compression fix
 
-This patch replaces the Android WebView `MediaRecorder` video path with a native Android video pipeline based on AndroidX Media3 Transformer/MediaCodec.
+This patch fixes Android compression failures by using native Android processing for both videos and images, while keeping a browser fallback for web builds.
 
-## Replace/add these files
+## What changed
 
-- `www/app.js` — uses the native engine on Android and keeps browser fallback.
-- `.github/workflows/android.yml` — builds Android and applies the native engine automatically.
-- `native/apply-android.sh` — injects the native Android code and Media3 dependencies after `npx cap add android`.
-- `native/android/com/squeezo/app/MainActivity.java`
-- `native/android/com/squeezo/app/SqueezoVideoCompressorPlugin.java`
-- `native/android/res/xml/file_paths.xml`
+- Android video picker/compression uses the native Media3/MediaCodec pipeline.
+- Android image picker/compression uses Android `BitmapFactory`/`Bitmap.compress`, so images do not depend on Android WebView `createImageBitmap()` decoding.
+- JPG, PNG, WebP and other Android-decodable image sources can be read through `ContentResolver`.
+- Compressed images and videos are saved locally under `Downloads/Squeezo` on Android 10+.
+- Browser image compression now uses an `Image` + object URL fallback instead of relying only on `createImageBitmap`.
+- The bundled `www/app.js` and root `app.js` are kept synchronized.
 
-The native picker avoids loading large videos into JavaScript memory. Compression runs on-device using Media3/MediaCodec and the MP4 result is saved to `Downloads/Squeezo` on Android 10+.
+No upload/server is required for compression.
