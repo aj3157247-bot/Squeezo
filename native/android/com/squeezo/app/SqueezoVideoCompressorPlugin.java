@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
@@ -59,6 +61,44 @@ public class SqueezoVideoCompressorPlugin extends Plugin {
         intent.setType("video/*");
         intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         startActivityForResult(call, intent, "pickVideosResult");
+    }
+
+    @PluginMethod
+    public void pickImages(PluginCall call) {
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        startActivityForResult(call, intent, "pickImagesResult");
+    }
+
+    @ActivityCallback
+    private void pickImagesResult(PluginCall call, ActivityResult result) {
+        if (call == null) return;
+        if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+            call.reject("Picker cancelled");
+            return;
+        }
+        Intent data = result.getData();
+        JSArray files = new JSArray();
+        try {
+            if (data.getClipData() != null) {
+                for (int i = 0; i < data.getClipData().getItemCount(); i++) {
+                    Uri uri = data.getClipData().getItemAt(i).getUri();
+                    persistPermission(uri, data.getFlags());
+                    files.put(metadata(uri));
+                }
+            } else if (data.getData() != null) {
+                Uri uri = data.getData();
+                persistPermission(uri, data.getFlags());
+                files.put(metadata(uri));
+            }
+            JSObject ret = new JSObject();
+            ret.put("files", files);
+            call.resolve(ret);
+        } catch (Exception e) {
+            call.reject("Unable to read selected image: " + e.getMessage());
+        }
     }
 
     @ActivityCallback
@@ -117,6 +157,91 @@ public class SqueezoVideoCompressorPlugin extends Plugin {
             if (c != null) c.close();
         }
         return o;
+    }
+
+    @PluginMethod
+    public void compressImage(PluginCall call) {
+        String path = call.getString("path");
+        if (path == null || path.isEmpty()) {
+            call.reject("Image path is missing");
+            return;
+        }
+        int quality = Math.max(1, Math.min(100, call.getInt("quality", 88)));
+        int maxSize = Math.max(0, call.getInt("maxSize", 0));
+        String format = call.getString("format", "webp");
+        boolean jpeg = "jpeg".equalsIgnoreCase(format);
+        Bitmap bitmap = null;
+        Bitmap scaled = null;
+        try {
+            Uri inputUri = Uri.parse(path);
+            ContentResolver resolver = getContext().getContentResolver();
+
+            BitmapFactory.Options bounds = new BitmapFactory.Options();
+            bounds.inJustDecodeBounds = true;
+            try (InputStream in = resolver.openInputStream(inputUri)) {
+                if (in == null || BitmapFactory.decodeStream(in, null, bounds) == null && bounds.outWidth <= 0) {
+                    throw new Exception("The source image could not be decoded");
+                }
+            }
+            if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
+                throw new Exception("The source image could not be decoded");
+            }
+
+            int sample = 1;
+            if (maxSize > 0) {
+                int largest = Math.max(bounds.outWidth, bounds.outHeight);
+                while (largest / (sample * 2) >= maxSize) sample *= 2;
+            }
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = sample;
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            try (InputStream in = resolver.openInputStream(inputUri)) {
+                if (in == null) throw new Exception("Unable to open source image");
+                bitmap = BitmapFactory.decodeStream(in, null, options);
+            }
+            if (bitmap == null) throw new Exception("The source image could not be decoded");
+
+            if (maxSize > 0) {
+                int largest = Math.max(bitmap.getWidth(), bitmap.getHeight());
+                if (largest > maxSize) {
+                    float scale = (float) maxSize / largest;
+                    int w = Math.max(1, Math.round(bitmap.getWidth() * scale));
+                    int h = Math.max(1, Math.round(bitmap.getHeight() * scale));
+                    scaled = Bitmap.createScaledBitmap(bitmap, w, h, true);
+                }
+            }
+            Bitmap outputBitmap = scaled != null ? scaled : bitmap;
+
+            File dir = new File(getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "Squeezo");
+            if (!dir.exists() && !dir.mkdirs()) throw new Exception("Cannot create output directory");
+            String base = safeName(getNameFromUri(inputUri));
+            String extension = jpeg ? "jpg" : "webp";
+            String mime = jpeg ? "image/jpeg" : "image/webp";
+            File output = new File(dir, base + "_squeezo." + extension);
+            if (output.exists()) output.delete();
+
+            Bitmap.CompressFormat compressFormat;
+            if (jpeg) {
+                compressFormat = Bitmap.CompressFormat.JPEG;
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                compressFormat = Bitmap.CompressFormat.WEBP_LOSSY;
+            } else {
+                compressFormat = Bitmap.CompressFormat.WEBP;
+            }
+            try (OutputStream out = new FileOutputStream(output)) {
+                if (!outputBitmap.compress(compressFormat, quality, out)) {
+                    throw new Exception("Image compression failed");
+                }
+            }
+
+            JSObject saved = publishImageOutput(output, base + "_squeezo." + extension, mime);
+            call.resolve(saved);
+        } catch (Exception e) {
+            call.reject(e.getMessage() == null ? "Native image compression failed" : e.getMessage());
+        } finally {
+            if (scaled != null && scaled != bitmap) scaled.recycle();
+            if (bitmap != null && !bitmap.isRecycled()) bitmap.recycle();
+        }
     }
 
     @PluginMethod
@@ -217,6 +342,37 @@ public class SqueezoVideoCompressorPlugin extends Plugin {
         progressRunnable = null;
     }
 
+    private JSObject publishImageOutput(File source, String displayName, String mimeType) throws Exception {
+        JSObject ret = new JSObject();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            ContentResolver resolver = getContext().getContentResolver();
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Images.Media.DISPLAY_NAME, displayName);
+            values.put(MediaStore.Images.Media.MIME_TYPE, mimeType);
+            values.put(MediaStore.Images.Media.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS + "/Squeezo");
+            values.put(MediaStore.Images.Media.IS_PENDING, 1);
+            Uri uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+            if (uri == null) throw new Exception("MediaStore insert failed");
+            try (InputStream in = new FileInputStream(source); OutputStream out = resolver.openOutputStream(uri)) {
+                if (out == null) throw new Exception("Cannot open destination");
+                byte[] buffer = new byte[1024 * 1024];
+                int n;
+                while ((n = in.read(buffer)) != -1) out.write(buffer, 0, n);
+            }
+            ContentValues done = new ContentValues();
+            done.put(MediaStore.Images.Media.IS_PENDING, 0);
+            resolver.update(uri, done, null, null);
+            ret.put("uri", uri.toString());
+        } else {
+            ret.put("uri", androidx.core.content.FileProvider.getUriForFile(getContext(), getContext().getPackageName() + ".fileprovider", source).toString());
+        }
+        ret.put("path", source.getAbsolutePath());
+        ret.put("name", displayName);
+        ret.put("size", source.length());
+        ret.put("mimeType", mimeType);
+        return ret;
+    }
+
     private JSObject publishOutput(File source, String displayName) throws Exception {
         JSObject ret = new JSObject();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -244,6 +400,7 @@ public class SqueezoVideoCompressorPlugin extends Plugin {
         ret.put("path", source.getAbsolutePath());
         ret.put("name", displayName);
         ret.put("size", source.length());
+        ret.put("mimeType", "video/mp4");
         return ret;
     }
 
